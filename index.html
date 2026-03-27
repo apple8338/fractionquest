@@ -1,758 +1,742 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.4">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>FractionQuest</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI','Arial Rounded MT Bold',Arial,sans-serif;touch-action:manipulation}
+#app{width:100%;height:100%;background:radial-gradient(ellipse at 20% 50%,#1a0533,#0a0a2e 50%,#000510);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#starfield{position:absolute;inset:0;pointer-events:none}
+.nebula{position:absolute;border-radius:50%;pointer-events:none;filter:blur(60px)}
+.nb1{width:300px;height:300px;background:#7c3aed18;top:-80px;right:-60px}
+.nb2{width:250px;height:250px;background:#1d4ed818;bottom:-60px;left:-40px}
+.shoot{position:absolute;width:2px;height:70px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff);border-radius:2px;animation:shoot 1.2s ease-out forwards;pointer-events:none}
+@keyframes shoot{0%{opacity:1;transform:translateY(0) rotate(25deg)}100%{opacity:0;transform:translateY(200px) rotate(25deg)}}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:22px;transition:opacity .35s,transform .35s}
+.screen.hidden{opacity:0;pointer-events:none;transform:scale(.97)}
+.cosmo{font-size:70px;line-height:1;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.game-title{font-size:clamp(28px,8vw,56px);font-weight:900;letter-spacing:2px;background:linear-gradient(135deg,#fff,#c4b5fd 50%,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1.1}
+.game-subtitle{font-size:clamp(11px,2.5vw,16px);color:#a5b4fc;letter-spacing:4px;text-transform:uppercase}
+.btn-primary{padding:14px 44px;font-size:clamp(15px,4vw,22px);font-weight:800;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:50px;cursor:pointer;box-shadow:0 0 24px rgba(124,58,237,.47);letter-spacing:1px;transition:transform .15s}
+.btn-primary:active{transform:scale(.93)}
+.worlds-title{font-size:clamp(15px,4vw,24px);font-weight:800;color:#e0e7ff;letter-spacing:2px}
+.worlds-grid{display:flex;flex-direction:column;gap:10px;width:100%;max-width:430px}
+.world-card{display:flex;align-items:center;gap:13px;padding:12px 15px;border-radius:16px;cursor:pointer;border:2px solid transparent;transition:transform .15s;position:relative;overflow:hidden}
+.world-card:active{transform:scale(.97)}
+.world-card.unlocked{background:linear-gradient(135deg,#1e1b4b88,#312e8188);border-color:#6366f1;box-shadow:0 0 14px rgba(99,102,241,.13)}
+.world-card.locked{background:#1e1b4b44;border-color:#374151;cursor:not-allowed;opacity:.5}
+.world-icon{font-size:36px;flex-shrink:0}
+.world-info{flex:1}
+.world-name{font-size:clamp(13px,3vw,18px);font-weight:800;color:#e0e7ff}
+.world-desc{font-size:clamp(9px,2vw,12px);color:#818cf8;margin-top:1px}
+.world-frac{font-size:clamp(8px,1.8vw,11px);color:#6ee7b7;margin-top:1px}
+.world-stars-row{display:flex;gap:2px;margin-top:3px;font-size:14px}
+.world-progress{position:absolute;bottom:0;left:0;height:3px;background:linear-gradient(90deg,#818cf8,#c4b5fd);border-radius:0 0 16px 16px;transition:width .5s}
+.game-header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:linear-gradient(180deg,rgba(10,10,46,.93),transparent);flex-shrink:0;z-index:10}
+.btn-back{background:none;border:2px solid #6366f1;color:#a5b4fc;padding:6px 12px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-back:active{transform:scale(.93)}
+.lbl{color:#c4b5fd;font-size:13px;font-weight:700;letter-spacing:1px}
+.hud{font-size:17px;color:#fbbf24;font-weight:700}
+.gbody{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:3px 11px 11px;max-width:490px;margin:0 auto;overflow:hidden}
+.ldots{display:flex;gap:7px}
+.dot{width:10px;height:10px;border-radius:50%;border:2px solid #6366f1;transition:background .3s}
+.dot.done{background:#6366f1}.dot.current{background:#a5b4fc;box-shadow:0 0 6px #a5b4fc}
+.ibox{width:100%;background:#1e1b4b99;border-radius:13px;padding:8px 13px;text-align:center}
+.ibox.b1{border:2px solid #6366f1}.ibox.b2{border:2px solid #0ea5e9}.ibox.b3{border:2px solid #a78bfa}.ibox.b4{border:2px solid #f59e0b}
+.itxt{font-size:clamp(12px,3.5vw,16px);color:#e0e7ff;font-weight:700;line-height:1.4}
+.fbig{font-size:clamp(24px,7vw,40px);font-weight:900;color:#fbbf24;display:block;margin-top:2px}
+.fbrow{min-height:26px;display:flex;align-items:center;justify-content:center;font-size:clamp(11px,3vw,15px);font-weight:800;text-align:center}
+.fb-correct{color:#34d399}.fb-wrong{color:#f87171}.fb-hint{color:#fbbf24}
+#sg{padding:0;justify-content:flex-start}
+.pwrap{width:100%;flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+#planet-svg{width:100%;height:100%;max-width:255px;max-height:255px;display:block;-webkit-tap-highlight-color:transparent}
+.btn-next{width:100%;max-width:230px;padding:11px 0;font-size:clamp(13px,3.8vw,18px);font-weight:800;background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;border-radius:48px;cursor:pointer;transition:transform .15s,opacity .3s}
+.btn-next:active{transform:scale(.93)}.btn-next.hidden{opacity:0;pointer-events:none}
+#sq{padding:0;justify-content:flex-start}
+.qpwrap{width:100%;flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+#quiz-svg{width:100%;height:100%;max-width:260px;max-height:260px;display:block;-webkit-tap-highlight-color:transparent}
+.fctr{display:flex;align-items:center;gap:7px;background:#1e1b4b99;border:2px solid #6366f1;border-radius:34px;padding:6px 16px}
+.fctr-n{font-size:clamp(16px,5vw,26px);font-weight:900;color:#e0e7ff;min-width:65px;text-align:center}
+.fctr-l{font-size:clamp(9px,2.2vw,12px);color:#818cf8;font-weight:700}
+.qbtns{display:flex;gap:9px;width:100%;max-width:270px}
+.btn-check{flex:1;padding:10px 0;font-size:clamp(13px,3.5vw,17px);font-weight:800;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:44px;cursor:pointer;transition:transform .15s,opacity .3s}
+.btn-check:active{transform:scale(.93)}.btn-check.hidden{opacity:0;pointer-events:none}
+.btn-skip{padding:10px 13px;font-size:clamp(11px,2.8vw,14px);font-weight:700;background:none;color:#6366f1;border:2px solid #6366f1;border-radius:44px;cursor:pointer}
+#sw2{padding:0;justify-content:flex-start}
+.w2arena{width:100%;flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+#w2-svg{width:100%;height:100%;max-width:330px;max-height:285px;display:block;overflow:visible;touch-action:none}
+.w2ctr{display:flex;align-items:center;gap:7px;background:#1e1b4b99;border:2px solid #0ea5e9;border-radius:34px;padding:6px 16px}
+.w2ctr-n{font-size:clamp(16px,5vw,26px);font-weight:900;color:#e0e7ff;min-width:65px;text-align:center}
+.w2ctr-l{font-size:clamp(9px,2.2vw,12px);color:#38bdf8;font-weight:700}
+.btn-launch{width:100%;max-width:230px;padding:11px 0;font-size:clamp(13px,3.5vw,18px);font-weight:800;background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;border:none;border-radius:48px;cursor:pointer;transition:transform .15s,opacity .3s}
+.btn-launch:active{transform:scale(.93)}.btn-launch.hidden{opacity:0;pointer-events:none}
+/* W3 */
+#sw3{padding:0;justify-content:flex-start}
+.w3body{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:3px 9px 9px;max-width:490px;margin:0 auto;overflow:hidden}
+.w3pairs{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;flex:1;min-height:0}
+.w3card{display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:16px;border:3px solid rgba(99,102,241,.3);padding:7px;transition:border-color .2s,box-shadow .2s;flex:1;max-width:165px;cursor:pointer}
+.w3card:active{transform:scale(.96)}
+.w3card.correct{border-color:#34d399;box-shadow:0 0 16px rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
+.w3card.wrong{border-color:#f87171;box-shadow:0 0 12px rgba(248,113,113,.4);background:rgba(248,113,113,.08)}
+.w3card svg{width:100%;max-width:125px;height:auto;display:block}
+.w3frac{font-size:clamp(14px,4vw,22px);font-weight:900;color:#e0e7ff}
+.w3vs{font-size:clamp(16px,3.8vw,24px);font-weight:900;color:#6366f1;flex-shrink:0}
+.w3fb{min-height:26px;display:flex;align-items:center;justify-content:center;font-size:clamp(12px,3vw,16px);font-weight:800;text-align:center}
+/* W3 answer buttons */
+.w3ans{display:flex;gap:8px;width:100%;max-width:380px;justify-content:center}
+.btn-w3a{flex:1;padding:12px 4px;font-size:clamp(12px,3.2vw,16px);font-weight:800;border:none;border-radius:44px;cursor:pointer;transition:transform .15s}
+.btn-w3a:active{transform:scale(.93)}
+.btn-w3al{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff}
+.btn-w3ae{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff}
+.btn-w3ar{background:linear-gradient(135deg,#059669,#047857);color:#fff}
+.btn-w3next{width:100%;max-width:230px;padding:11px 0;font-size:clamp(13px,3.5vw,18px);font-weight:800;background:linear-gradient(135deg,#34d399,#059669);color:#fff;border:none;border-radius:48px;cursor:pointer;transition:transform .15s,opacity .3s}
+.btn-w3next:active{transform:scale(.93)}.btn-w3next.hidden{opacity:0;pointer-events:none}
+/* W4 */
+#sw4{padding:0;justify-content:flex-start}
+.w4body{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:3px 9px 9px;max-width:490px;margin:0 auto;overflow:hidden}
+.w4opts{display:flex;gap:9px;width:100%;justify-content:center}
+.w4card{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;border-radius:15px;border:2.5px solid rgba(99,102,241,.27);padding:8px 5px;transition:border-color .2s,transform .15s,box-shadow .2s;flex:1;max-width:135px;background:#1e1b4b55}
+.w4card:active{transform:scale(.95)}
+.w4card.correct{border-color:#34d399;box-shadow:0 0 14px rgba(52,211,153,.4);background:rgba(52,211,153,.1)}
+.w4card.wrong{border-color:#f87171;box-shadow:0 0 10px rgba(248,113,113,.33);background:rgba(248,113,113,.07)}
+.w4card.reveal{border-color:#34d399;background:rgba(52,211,153,.1)}
+.w4card svg{width:100%;max-width:105px;height:auto;display:block}
+.w4frac{font-size:clamp(13px,4vw,20px);font-weight:900;color:#e0e7ff}
+.w4fb{min-height:24px;display:flex;align-items:center;justify-content:center;font-size:clamp(11px,3vw,15px);font-weight:800;text-align:center}
+#star-burst{position:absolute;inset:0;pointer-events:none;z-index:20;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.burst-inner{font-size:88px}
+@keyframes burst{0%{transform:scale(.1);opacity:1}65%{transform:scale(1.4);opacity:1}100%{transform:scale(1.1);opacity:0}}
+.cicon{font-size:78px;animation:float 2.5s ease-in-out infinite}
+.ctitle{font-size:clamp(20px,6vw,38px);font-weight:900;color:#fbbf24;text-align:center}
+.cstars{font-size:clamp(22px,6vw,38px);letter-spacing:8px}
+.cmsg{font-size:clamp(11px,3vw,15px);color:#a5b4fc;text-align:center;max-width:290px;line-height:1.5}
+@keyframes pulseSlice{from{opacity:.85}to{opacity:1;filter:brightness(1.2)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+</style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"&gt;</p>
-<p class="p1">&lt;title&gt;FractionQuest&lt;/title&gt;</p>
-<p class="p1">&lt;style&gt;</p>
-<p class="p1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}</p>
-<p class="p1">html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI','Arial Rounded MT Bold',Arial,sans-serif;touch-action:manipulation}</p>
-<p class="p1">#app{width:100%;height:100%;background:radial-gradient(ellipse at 20% 50%,#1a0533,#0a0a2e 50%,#000510);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center}</p>
-<p class="p1">#starfield{position:absolute;inset:0;pointer-events:none}</p>
-<p class="p1">.nebula{position:absolute;border-radius:50%;pointer-events:none;filter:blur(60px)}</p>
-<p class="p1">.nb1{width:300px;height:300px;background:#7c3aed18;top:-80px;right:-60px}</p>
-<p class="p1">.nb2{width:250px;height:250px;background:#1d4ed818;bottom:-60px;left:-40px}</p>
-<p class="p1">.shoot{position:absolute;width:2px;height:70px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff);border-radius:2px;animation:shoot 1.2s ease-out forwards;pointer-events:none}</p>
-<p class="p1">@keyframes shoot{0%{opacity:1;transform:translateY(0) rotate(25deg)}100%{opacity:0;transform:translateY(200px) rotate(25deg)}}</p>
-<p class="p1">.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:22px;transition:opacity .35s,transform .35s}</p>
-<p class="p1">.screen.hidden{opacity:0;pointer-events:none;transform:scale(.97)}</p>
-<p class="p1">.cosmo{font-size:70px;line-height:1;animation:float 3s ease-in-out infinite}</p>
-<p class="p1">@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}</p>
-<p class="p1">.game-title{font-size:clamp(28px,8vw,56px);font-weight:900;letter-spacing:2px;background:linear-gradient(135deg,#fff,#c4b5fd 50%,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1.1}</p>
-<p class="p1">.game-subtitle{font-size:clamp(11px,2.5vw,16px);color:#a5b4fc;letter-spacing:4px;text-transform:uppercase}</p>
-<p class="p1">.btn-primary{padding:14px 44px;font-size:clamp(15px,4vw,22px);font-weight:800;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:50px;cursor:pointer;box-shadow:0 0 24px rgba(124,58,237,.47);letter-spacing:1px;transition:transform .15s}</p>
-<p class="p1">.btn-primary:active{transform:scale(.93)}</p>
-<p class="p1">.worlds-title{font-size:clamp(15px,4vw,24px);font-weight:800;color:#e0e7ff;letter-spacing:2px}</p>
-<p class="p1">.worlds-grid{display:flex;flex-direction:column;gap:10px;width:100%;max-width:430px}</p>
-<p class="p1">.world-card{display:flex;align-items:center;gap:13px;padding:12px 15px;border-radius:16px;cursor:pointer;border:2px solid transparent;transition:transform .15s;position:relative;overflow:hidden}</p>
-<p class="p1">.world-card:active{transform:scale(.97)}</p>
-<p class="p1">.world-card.unlocked{background:linear-gradient(135deg,#1e1b4b88,#312e8188);border-color:#6366f1;box-shadow:0 0 14px rgba(99,102,241,.13)}</p>
-<p class="p1">.world-card.locked{background:#1e1b4b44;border-color:#374151;cursor:not-allowed;opacity:.5}</p>
-<p class="p1">.world-icon{font-size:36px;flex-shrink:0}</p>
-<p class="p1">.world-info{flex:1}</p>
-<p class="p1">.world-name{font-size:clamp(13px,3vw,18px);font-weight:800;color:#e0e7ff}</p>
-<p class="p1">.world-desc{font-size:clamp(9px,2vw,12px);color:#818cf8;margin-top:1px}</p>
-<p class="p1">.world-frac{font-size:clamp(8px,1.8vw,11px);color:#6ee7b7;margin-top:1px}</p>
-<p class="p1">.world-stars-row{display:flex;gap:2px;margin-top:3px;font-size:14px}</p>
-<p class="p1">.world-progress{position:absolute;bottom:0;left:0;height:3px;background:linear-gradient(90deg,#818cf8,#c4b5fd);border-radius:0 0 16px 16px;transition:width .5s}</p>
-<p class="p1">.game-header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:linear-gradient(180deg,rgba(10,10,46,.93),transparent);flex-shrink:0;z-index:10}</p>
-<p class="p1">.btn-back{background:none;border:2px solid #6366f1;color:#a5b4fc;padding:6px 12px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer}</p>
-<p class="p1">.btn-back:active{transform:scale(.93)}</p>
-<p class="p1">.lbl{color:#c4b5fd;font-size:13px;font-weight:700;letter-spacing:1px}</p>
-<p class="p1">.hud{font-size:17px;color:#fbbf24;font-weight:700}</p>
-<p class="p1">.gbody{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:3px 11px 11px;max-width:490px;margin:0 auto;overflow:hidden}</p>
-<p class="p1">.ldots{display:flex;gap:7px}</p>
-<p class="p1">.dot{width:10px;height:10px;border-radius:50%;border:2px solid #6366f1;transition:background .3s}</p>
-<p class="p1">.dot.done{background:#6366f1}.dot.current{background:#a5b4fc;box-shadow:0 0 6px #a5b4fc}</p>
-<p class="p1">.ibox{width:100%;background:#1e1b4b99;border-radius:13px;padding:8px 13px;text-align:center}</p>
-<p class="p1">.ibox.b1{border:2px solid #6366f1}.ibox.b2{border:2px solid #0ea5e9}.ibox.b3{border:2px solid #a78bfa}.ibox.b4{border:2px solid #f59e0b}</p>
-<p class="p1">.itxt{font-size:clamp(12px,3.5vw,16px);color:#e0e7ff;font-weight:700;line-height:1.4}</p>
-<p class="p1">.fbig{font-size:clamp(24px,7vw,40px);font-weight:900;color:#fbbf24;display:block;margin-top:2px}</p>
-<p class="p1">.fbrow{min-height:26px;display:flex;align-items:center;justify-content:center;font-size:clamp(11px,3vw,15px);font-weight:800;text-align:center}</p>
-<p class="p1">.fb-correct{color:#34d399}.fb-wrong{color:#f87171}.fb-hint{color:#fbbf24}</p>
-<p class="p1">#sg{padding:0;justify-content:flex-start}</p>
-<p class="p1">.pwrap{width:100%;flex:1;display:flex;align-items:center;justify-content:center;min-height:0}</p>
-<p class="p1">#planet-svg{width:100%;height:100%;max-width:255px;max-height:255px;display:block;-webkit-tap-highlight-color:transparent}</p>
-<p class="p1">.btn-next{width:100%;max-width:230px;padding:11px 0;font-size:clamp(13px,3.8vw,18px);font-weight:800;background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;border-radius:48px;cursor:pointer;transition:transform .15s,opacity .3s}</p>
-<p class="p1">.btn-next:active{transform:scale(.93)}.btn-next.hidden{opacity:0;pointer-events:none}</p>
-<p class="p1">#sq{padding:0;justify-content:flex-start}</p>
-<p class="p1">.qpwrap{width:100%;flex:1;display:flex;align-items:center;justify-content:center;min-height:0}</p>
-<p class="p1">#quiz-svg{width:100%;height:100%;max-width:260px;max-height:260px;display:block;-webkit-tap-highlight-color:transparent}</p>
-<p class="p1">.fctr{display:flex;align-items:center;gap:7px;background:#1e1b4b99;border:2px solid #6366f1;border-radius:34px;padding:6px 16px}</p>
-<p class="p1">.fctr-n{font-size:clamp(16px,5vw,26px);font-weight:900;color:#e0e7ff;min-width:65px;text-align:center}</p>
-<p class="p1">.fctr-l{font-size:clamp(9px,2.2vw,12px);color:#818cf8;font-weight:700}</p>
-<p class="p1">.qbtns{display:flex;gap:9px;width:100%;max-width:270px}</p>
-<p class="p1">.btn-check{flex:1;padding:10px 0;font-size:clamp(13px,3.5vw,17px);font-weight:800;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:44px;cursor:pointer;transition:transform .15s,opacity .3s}</p>
-<p class="p1">.btn-check:active{transform:scale(.93)}.btn-check.hidden{opacity:0;pointer-events:none}</p>
-<p class="p1">.btn-skip{padding:10px 13px;font-size:clamp(11px,2.8vw,14px);font-weight:700;background:none;color:#6366f1;border:2px solid #6366f1;border-radius:44px;cursor:pointer}</p>
-<p class="p1">#sw2{padding:0;justify-content:flex-start}</p>
-<p class="p1">.w2arena{width:100%;flex:1;display:flex;align-items:center;justify-content:center;min-height:0}</p>
-<p class="p1">#w2-svg{width:100%;height:100%;max-width:330px;max-height:285px;display:block;overflow:visible;touch-action:none}</p>
-<p class="p1">.w2ctr{display:flex;align-items:center;gap:7px;background:#1e1b4b99;border:2px solid #0ea5e9;border-radius:34px;padding:6px 16px}</p>
-<p class="p1">.w2ctr-n{font-size:clamp(16px,5vw,26px);font-weight:900;color:#e0e7ff;min-width:65px;text-align:center}</p>
-<p class="p1">.w2ctr-l{font-size:clamp(9px,2.2vw,12px);color:#38bdf8;font-weight:700}</p>
-<p class="p1">.btn-launch{width:100%;max-width:230px;padding:11px 0;font-size:clamp(13px,3.5vw,18px);font-weight:800;background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;border:none;border-radius:48px;cursor:pointer;transition:transform .15s,opacity .3s}</p>
-<p class="p1">.btn-launch:active{transform:scale(.93)}.btn-launch.hidden{opacity:0;pointer-events:none}</p>
-<p class="p1">/* W3 */</p>
-<p class="p1">#sw3{padding:0;justify-content:flex-start}</p>
-<p class="p1">.w3body{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:3px 9px 9px;max-width:490px;margin:0 auto;overflow:hidden}</p>
-<p class="p1">.w3pairs{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;flex:1;min-height:0}</p>
-<p class="p1">.w3card{display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:16px;border:3px solid rgba(99,102,241,.3);padding:7px;transition:border-color .2s,box-shadow .2s;flex:1;max-width:165px;cursor:pointer}</p>
-<p class="p1">.w3card:active{transform:scale(.96)}</p>
-<p class="p1">.w3card.correct{border-color:#34d399;box-shadow:0 0 16px rgba(52,211,153,.4);background:rgba(52,211,153,.08)}</p>
-<p class="p1">.w3card.wrong{border-color:#f87171;box-shadow:0 0 12px rgba(248,113,113,.4);background:rgba(248,113,113,.08)}</p>
-<p class="p1">.w3card svg{width:100%;max-width:125px;height:auto;display:block}</p>
-<p class="p1">.w3frac{font-size:clamp(14px,4vw,22px);font-weight:900;color:#e0e7ff}</p>
-<p class="p1">.w3vs{font-size:clamp(16px,3.8vw,24px);font-weight:900;color:#6366f1;flex-shrink:0}</p>
-<p class="p1">.w3fb{min-height:26px;display:flex;align-items:center;justify-content:center;font-size:clamp(12px,3vw,16px);font-weight:800;text-align:center}</p>
-<p class="p1">/* W3 answer buttons */</p>
-<p class="p1">.w3ans{display:flex;gap:8px;width:100%;max-width:380px;justify-content:center}</p>
-<p class="p1">.btn-w3a{flex:1;padding:12px 4px;font-size:clamp(12px,3.2vw,16px);font-weight:800;border:none;border-radius:44px;cursor:pointer;transition:transform .15s}</p>
-<p class="p1">.btn-w3a:active{transform:scale(.93)}</p>
-<p class="p1">.btn-w3al{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff}</p>
-<p class="p1">.btn-w3ae{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff}</p>
-<p class="p1">.btn-w3ar{background:linear-gradient(135deg,#059669,#047857);color:#fff}</p>
-<p class="p1">.btn-w3next{width:100%;max-width:230px;padding:11px 0;font-size:clamp(13px,3.5vw,18px);font-weight:800;background:linear-gradient(135deg,#34d399,#059669);color:#fff;border:none;border-radius:48px;cursor:pointer;transition:transform .15s,opacity .3s}</p>
-<p class="p1">.btn-w3next:active{transform:scale(.93)}.btn-w3next.hidden{opacity:0;pointer-events:none}</p>
-<p class="p1">/* W4 */</p>
-<p class="p1">#sw4{padding:0;justify-content:flex-start}</p>
-<p class="p1">.w4body{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:3px 9px 9px;max-width:490px;margin:0 auto;overflow:hidden}</p>
-<p class="p1">.w4opts{display:flex;gap:9px;width:100%;justify-content:center}</p>
-<p class="p1">.w4card{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;border-radius:15px;border:2.5px solid rgba(99,102,241,.27);padding:8px 5px;transition:border-color .2s,transform .15s,box-shadow .2s;flex:1;max-width:135px;background:#1e1b4b55}</p>
-<p class="p1">.w4card:active{transform:scale(.95)}</p>
-<p class="p1">.w4card.correct{border-color:#34d399;box-shadow:0 0 14px rgba(52,211,153,.4);background:rgba(52,211,153,.1)}</p>
-<p class="p1">.w4card.wrong{border-color:#f87171;box-shadow:0 0 10px rgba(248,113,113,.33);background:rgba(248,113,113,.07)}</p>
-<p class="p1">.w4card.reveal{border-color:#34d399;background:rgba(52,211,153,.1)}</p>
-<p class="p1">.w4card svg{width:100%;max-width:105px;height:auto;display:block}</p>
-<p class="p1">.w4frac{font-size:clamp(13px,4vw,20px);font-weight:900;color:#e0e7ff}</p>
-<p class="p1">.w4fb{min-height:24px;display:flex;align-items:center;justify-content:center;font-size:clamp(11px,3vw,15px);font-weight:800;text-align:center}</p>
-<p class="p1">#star-burst{position:absolute;inset:0;pointer-events:none;z-index:20;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}</p>
-<p class="p1">.burst-inner{font-size:88px}</p>
-<p class="p1">@keyframes burst{0%{transform:scale(.1);opacity:1}65%{transform:scale(1.4);opacity:1}100%{transform:scale(1.1);opacity:0}}</p>
-<p class="p1">.cicon{font-size:78px;animation:float 2.5s ease-in-out infinite}</p>
-<p class="p1">.ctitle{font-size:clamp(20px,6vw,38px);font-weight:900;color:#fbbf24;text-align:center}</p>
-<p class="p1">.cstars{font-size:clamp(22px,6vw,38px);letter-spacing:8px}</p>
-<p class="p1">.cmsg{font-size:clamp(11px,3vw,15px);color:#a5b4fc;text-align:center;max-width:290px;line-height:1.5}</p>
-<p class="p1">@keyframes pulseSlice{from{opacity:.85}to{opacity:1;filter:brightness(1.2)}}</p>
-<p class="p1">@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}</p>
-<p class="p1">&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1">&lt;div id="app"&gt;</p>
-<p class="p1">&lt;canvas id="starfield"&gt;&lt;/canvas&gt;</p>
-<p class="p1">&lt;div class="nebula nb1"&gt;&lt;/div&gt;&lt;div class="nebula nb2"&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;div id="star-burst"&gt;&lt;div class="burst-inner"&gt;&amp;#11088;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- TITLE --&gt;</p>
-<p class="p1">&lt;div class="screen" id="screen-title"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="cosmo"&gt;&amp;#128104;&amp;#8205;&amp;#128640;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div style="text-align:center"&gt;&lt;div class="game-title"&gt;FRACTION&lt;br&gt;QUEST&lt;/div&gt;&lt;div class="game-subtitle"&gt;Space Math Adventure&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="btn-primary" id="btn-start"&gt;&amp;#128640; START&lt;/button&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- MAP --&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="screen-map"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="worlds-title"&gt;&amp;#127756; Choose Your World&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="worlds-grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="world-card unlocked" data-world="1"&gt;&lt;div class="world-icon"&gt;&amp;#129680;&lt;/div&gt;&lt;div class="world-info"&gt;&lt;div class="world-name"&gt;Planet Pizza&lt;/div&gt;&lt;div class="world-desc"&gt;Tap to slice · Unit fractions&lt;/div&gt;&lt;div class="world-frac"&gt;1/2 · 1/3 · 1/4 · 1/5 · 1/7&lt;/div&gt;&lt;div class="world-stars-row" id="sw1"&gt;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&lt;/div&gt;&lt;/div&gt;&lt;div class="world-progress" id="pw1" style="width:0%"&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="world-card unlocked" data-world="2"&gt;&lt;div class="world-icon"&gt;&amp;#127776;&lt;/div&gt;&lt;div class="world-info"&gt;&lt;div class="world-name"&gt;Asteroid Belt&lt;/div&gt;&lt;div class="world-desc"&gt;Tap pieces · Build fractions&lt;/div&gt;&lt;div class="world-frac"&gt;2/5 · 3/7 · 2/3 · 3/4 · 4/5&lt;/div&gt;&lt;div class="world-stars-row" id="map-sw2"&gt;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&lt;/div&gt;&lt;/div&gt;&lt;div class="world-progress" id="pw2" style="width:0%"&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="world-card unlocked" data-world="3"&gt;&lt;div class="world-icon"&gt;&amp;#11088;&lt;/div&gt;&lt;div class="world-info"&gt;&lt;div class="world-name"&gt;Twin Stars&lt;/div&gt;&lt;div class="world-desc"&gt;Color &amp;amp; compare fractions!&lt;/div&gt;&lt;div class="world-frac"&gt;Which is bigger? Discover equals!&lt;/div&gt;&lt;div class="world-stars-row" id="map-sw3"&gt;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&lt;/div&gt;&lt;/div&gt;&lt;div class="world-progress" id="pw3" style="width:0%"&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="world-card unlocked" data-world="4"&gt;&lt;div class="world-icon"&gt;&amp;#128760;&lt;/div&gt;&lt;div class="world-info"&gt;&lt;div class="world-name"&gt;Mission Control&lt;/div&gt;&lt;div class="world-desc"&gt;Pick the right fraction!&lt;/div&gt;&lt;div class="world-frac"&gt;Biggest · Smallest · Equals&lt;/div&gt;&lt;div class="world-stars-row" id="map-sw4"&gt;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&amp;#9734;&lt;/div&gt;&lt;/div&gt;&lt;div class="world-progress" id="pw4" style="width:0%"&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- W1 SLICE --&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="sg"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="game-header"&gt;&lt;button class="btn-back" id="bb1"&gt;&amp;#8592; Back&lt;/button&gt;&lt;div class="lbl" id="ll1"&gt;World 1 · Level 1&lt;/div&gt;&lt;div class="hud"&gt;&amp;#11088;&lt;span id="hs1"&gt;0&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="gbody"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ldots" id="ld1"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ibox b1"&gt;&lt;div class="itxt" id="it1"&gt;&lt;/div&gt;&lt;span class="fbig" id="fd1"&gt;&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="pwrap"&gt;&lt;svg id="planet-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"&gt;&lt;/svg&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="fbrow" id="fb1"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="btn-next hidden" id="bn1"&gt;Next &amp;#8594;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- W1 QUIZ --&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="sq"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="game-header"&gt;&lt;button class="btn-back" id="bbq"&gt;&amp;#8592; Back&lt;/button&gt;&lt;div class="lbl" id="llq"&gt;Quiz&lt;/div&gt;&lt;div class="hud"&gt;&amp;#11088;&lt;span id="hsq"&gt;0&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="gbody"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ibox b1" style="border-color:#f59e0b"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="itxt" style="font-size:clamp(9px,2.2vw,12px);color:#fbbf24;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px"&gt;&amp;#127912; Color Challenge!&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="itxt" id="qt"&gt;&lt;/div&gt;&lt;span class="fbig" id="qf"&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="qpwrap"&gt;&lt;svg id="quiz-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"&gt;&lt;/svg&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="fctr"&gt;&lt;div class="fctr-l"&gt;You colored&lt;/div&gt;&lt;div class="fctr-n" id="qcn"&gt;0/4&lt;/div&gt;&lt;div class="fctr-l"&gt;pieces&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="fbrow" id="qfb"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="qbtns"&gt;&lt;button class="btn-check" id="bc"&gt;&amp;#10003; Check!&lt;/button&gt;&lt;button class="btn-skip" id="bsk"&gt;Skip &amp;#8594;&lt;/button&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- W1 AHA --&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="s1aha"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div style="text-align:center"&gt;&lt;div style="font-size:clamp(10px,2.5vw,13px);color:#fbbf24;font-weight:700;letter-spacing:3px;text-transform:uppercase"&gt;&amp;#10024; Discovery!&lt;/div&gt;&lt;div style="font-size:clamp(15px,4vw,22px);font-weight:800;color:#e0e7ff;margin-top:4px"&gt;Look what happens...&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;svg id="aha1-svg" viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:370px;overflow:visible"&gt;&lt;/svg&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div style="background:#1e1b4b99;border:2px solid #a78bfa;border-radius:13px;padding:10px 16px;text-align:center;max-width:310px"&gt;&lt;div style="font-size:clamp(12px,3.5vw,16px);color:#e0e7ff;font-weight:700;line-height:1.5"&gt;2 pieces out of 4 = 1 piece out of 2!&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="btn-primary" id="ba1"&gt;I see it! &amp;#10024;&lt;/button&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- W2 --&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="sw2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="game-header"&gt;&lt;button class="btn-back" id="bb2"&gt;&amp;#8592; Back&lt;/button&gt;&lt;div class="lbl" id="ll2"&gt;World 2 · Level 1&lt;/div&gt;&lt;div class="hud"&gt;&amp;#11088;&lt;span id="hs2"&gt;0&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="gbody"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ldots" id="ld2"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ibox b2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="itxt" style="font-size:clamp(9px,2vw,11px);color:#38bdf8;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px"&gt;&amp;#127776; Asteroid Belt&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="itxt" id="w2t"&gt;&lt;/div&gt;&lt;span class="fbig" id="w2f" style="color:#38bdf8"&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="w2arena"&gt;&lt;svg id="w2-svg" viewBox="0 0 360 280" xmlns="http://www.w3.org/2000/svg" style="touch-action:none;width:100%;height:100%;max-width:330px;max-height:280px;display:block;overflow:visible"&gt;&lt;/svg&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="w2ctr"&gt;&lt;div class="w2ctr-l"&gt;Loaded&lt;/div&gt;&lt;div class="w2ctr-n" id="w2c"&gt;0/5&lt;/div&gt;&lt;div class="w2ctr-l"&gt;pieces&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="fbrow" id="w2fb"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="btn-launch hidden" id="bl"&gt;&amp;#10003; Launch!&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- W3 COLOR + CHOOSE --&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="sw3"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="game-header"&gt;&lt;button class="btn-back" id="bb3"&gt;&amp;#8592; Back&lt;/button&gt;&lt;div class="lbl" id="ll3"&gt;World 3 · Level 1&lt;/div&gt;&lt;div class="hud"&gt;&amp;#11088;&lt;span id="hs3"&gt;0&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="w3body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ldots" id="ld3"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ibox b3"&gt;&lt;div class="itxt" id="w3t"&gt;Which is bigger?&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="w3pairs" id="w3pairs"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="w3fb" id="w3fb"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="w3ans" id="w3ans"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-w3a btn-w3al" id="bw3al"&gt;&amp;#11013; Left&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-w3a btn-w3ae" id="bw3ae"&gt;= Same&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-w3a btn-w3ar" id="bw3ar"&gt;Right &amp;#10145;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="btn-w3next hidden" id="bw3n"&gt;Next &amp;#8594;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- W3 AHA --&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="sw3aha"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div style="text-align:center"&gt;&lt;div style="font-size:clamp(10px,2.5vw,13px);color:#fbbf24;font-weight:700;letter-spacing:3px;text-transform:uppercase"&gt;&amp;#10024; Discovery!&lt;/div&gt;&lt;div style="font-size:clamp(15px,4vw,22px);font-weight:800;color:#e0e7ff;margin-top:4px"&gt;Wait — these are the same!&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;svg id="aha3-svg" viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:370px;overflow:visible"&gt;&lt;/svg&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div style="background:#1e1b4b99;border:2px solid #a78bfa;border-radius:13px;padding:10px 16px;text-align:center;max-width:310px"&gt;&lt;div style="font-size:clamp(12px,3.5vw,16px);color:#e0e7ff;font-weight:700;line-height:1.5" id="aha3msg"&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="btn-primary" id="ba3"&gt;Cool! &amp;#10024;&lt;/button&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- W4 --&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="sw4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="game-header"&gt;&lt;button class="btn-back" id="bb4"&gt;&amp;#8592; Back&lt;/button&gt;&lt;div class="lbl" id="ll4"&gt;World 4 · Q 1&lt;/div&gt;&lt;div class="hud"&gt;&amp;#11088;&lt;span id="hs4"&gt;0&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="w4body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ldots" id="ld4"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ibox b4"&gt;&lt;div class="itxt" id="w4t"&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="w4opts" id="w4opts"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="w4fb" id="w4fb"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- COMPLETE --&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="sc1"&gt;&lt;div class="cicon"&gt;&amp;#129680;&lt;/div&gt;&lt;div class="ctitle"&gt;Planet Pizza Conquered!&lt;/div&gt;&lt;div class="cstars" id="cs1"&gt;&lt;/div&gt;&lt;div class="cmsg"&gt;You can slice any fraction!&lt;/div&gt;&lt;button class="btn-primary" id="btc1"&gt;Back to Map&lt;/button&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="sc2"&gt;&lt;div class="cicon"&gt;&amp;#127776;&lt;/div&gt;&lt;div class="ctitle"&gt;Asteroid Belt Cleared!&lt;/div&gt;&lt;div class="cstars" id="cs2"&gt;&lt;/div&gt;&lt;div class="cmsg"&gt;You can build any fraction!&lt;/div&gt;&lt;button class="btn-primary" id="btc2"&gt;Back to Map&lt;/button&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="sc3"&gt;&lt;div class="cicon"&gt;&amp;#11088;&lt;/div&gt;&lt;div class="ctitle"&gt;Twin Stars Complete!&lt;/div&gt;&lt;div class="cstars" id="cs3"&gt;&lt;/div&gt;&lt;div class="cmsg"&gt;You can compare fractions!&lt;/div&gt;&lt;button class="btn-primary" id="btc3"&gt;Back to Map&lt;/button&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;div class="screen hidden" id="sc4"&gt;&lt;div class="cicon"&gt;&amp;#128760;&lt;/div&gt;&lt;div class="ctitle"&gt;Mission Control Complete!&lt;/div&gt;&lt;div class="cstars" id="cs4"&gt;&lt;/div&gt;&lt;div class="cmsg"&gt;You are a Fraction Master!&lt;/div&gt;&lt;button class="btn-primary" id="btc4"&gt;Back to Map&lt;/button&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1">// STARFIELD</p>
-<p class="p1">var cvs=document.getElementById('starfield'),ctx=cvs.getContext('2d'),stars=[];</p>
-<p class="p1">function resizeCvs(){cvs.width=innerWidth;cvs.height=innerHeight;stars=[];for(var i=0;i&lt;140;i++)stars.push({x:Math.random()*cvs.width,y:Math.random()*cvs.height,r:Math.random()*1.4+.3,speed:Math.random()*.007+.002,phase:Math.random()*Math.PI*2});}</p>
-<p class="p1">function drawStars(t){ctx.clearRect(0,0,cvs.width,cvs.height);for(var i=0;i&lt;stars.length;i++){var s=stars[i];var a=.2+.8*(Math.sin(t*.001*s.speed*800+s.phase)*.5+.5);ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+a+')';ctx.fill();}requestAnimationFrame(drawStars);}</p>
-<p class="p1">window.addEventListener('resize',resizeCvs);resizeCvs();requestAnimationFrame(drawStars);</p>
-<p class="p1">setInterval(function(){var e=document.createElement('div');e.className='shoot';e.style.left=(10+Math.random()*80)+'%';e.style.top=(Math.random()*40)+'%';document.getElementById('app').appendChild(e);setTimeout(function(){e.remove();},1300);},4200);</p>
-<p class="p2"><br></p>
-<p class="p1">// SPEECH</p>
-<p class="p1">function speak(text){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=0.82;u.pitch=1.1;u.volume=1;window.speechSynthesis.speak(u);}</p>
-<p class="p2"><br></p>
-<p class="p1">// AUDIO</p>
-<p class="p1">var aCtx=null;</p>
-<p class="p1">function au(){if(!aCtx)aCtx=new(window.AudioContext||window.webkitAudioContext)();return aCtx;}</p>
-<p class="p1">function tone(f,d,t,v){t=t||'sine';v=v||.12;try{var a=au(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.start();o.stop(a.currentTime+d);}catch(e){}}</p>
-<p class="p1">function sfxTap(){tone(440,.06);}</p>
-<p class="p1">function sfxSlice(){tone(520,.05);setTimeout(function(){tone(720,.07);},55);}</p>
-<p class="p1">function sfxColor(){tone(600,.07,'sine',.08);}</p>
-<p class="p1">function sfxSel(){tone(660,.07,'sine',.09);}</p>
-<p class="p1">function sfxDesel(){tone(400,.07,'sine',.09);}</p>
-<p class="p1">function sfxYes(){var ff=[523,659,784,1047];for(var i=0;i&lt;ff.length;i++){(function(f,d){setTimeout(function(){tone(f,.17);},d);})(ff[i],i*75);}}</p>
-<p class="p1">function sfxNo(){tone(200,.28,'sawtooth',.07);}</p>
-<p class="p1">function sfxWrong(){tone(260,.2,'sawtooth',.07);}</p>
-<p class="p1">function sfxLaunch(){var ff=[400,500,650,800,1000];for(var i=0;i&lt;ff.length;i++){(function(f,d){setTimeout(function(){tone(f,.11);},d);})(ff[i],i*55);}}</p>
-<p class="p1">function sfxNext(){tone(660,.11);}</p>
-<p class="p1">function sfxPing(){tone(800,.06,'sine',.08);}</p>
-<p class="p2"><br></p>
-<p class="p1">// STORAGE</p>
-<p class="p1">var SK='fq10';</p>
-<p class="p1">function loadP(){try{return JSON.parse(localStorage.getItem(SK))||defP();}catch(e){return defP();}}</p>
-<p class="p1">function saveP(){localStorage.setItem(SK,JSON.stringify(prog));}</p>
-<p class="p1">function defP(){return{w1:{done:0,stars:0},w2:{done:0,stars:0},w3:{done:0,stars:0},w4:{done:0,stars:0}};}</p>
-<p class="p1">var prog=loadP();</p>
-<p class="p2"><br></p>
-<p class="p1">function show(id){var ss=document.querySelectorAll('.screen');for(var i=0;i&lt;ss.length;i++)ss[i].classList.add('hidden');document.getElementById(id).classList.remove('hidden');}</p>
-<p class="p2"><br></p>
-<p class="p1">// SVG UTILS</p>
-<p class="p1">var NS='http://www.w3.org/2000/svg';</p>
-<p class="p1">function ms(tag){return document.createElementNS(NS,tag);}</p>
-<p class="p1">function sa(el,o){var ks=Object.keys(o);for(var i=0;i&lt;ks.length;i++)el.setAttribute(ks[i],o[ks[i]]);return el;}</p>
-<p class="p1">function ltn(hex,a){var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);r=Math.min(255,Math.round(r+(255-r)*a));g=Math.min(255,Math.round(g+(255-g)*a));b=Math.min(255,Math.round(b+(255-b)*a));return'#'+(r&lt;16?'0':'')+r.toString(16)+(g&lt;16?'0':'')+g.toString(16)+(b&lt;16?'0':'')+b.toString(16);}</p>
-<p class="p1">var CX=150,CY=150,R=120;</p>
-<p class="p2"><br></p>
-<p class="p1">function miniPie(n,k,pc){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 100 100');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var cx=50,cy=50,r=42,uid=Math.random().toString(36).slice(2,8),gid='g'+uid,hid='h'+uid,defs=ms('defs');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>defs.innerHTML='&lt;radialGradient id="'+gid+'" cx="35%" cy="32%" r="65%"&gt;&lt;stop offset="0%" stop-color="'+ltn(pc,.5)+'"/&gt;&lt;stop offset="100%" stop-color="'+pc+'"/&gt;&lt;/radialGradient&gt;&lt;radialGradient id="'+hid+'" cx="35%" cy="32%" r="65%"&gt;&lt;stop offset="0%" stop-color="#ffe066"/&gt;&lt;stop offset="100%" stop-color="#f59e0b"/&gt;&lt;/radialGradient&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(defs);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var step=Math.PI*2/n,start=-Math.PI/2;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;n;i++){var a1=start+step*i,a2=a1+step,x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2),large=step&gt;Math.PI?1:0;svg.appendChild(sa(ms('path'),{d:'M'+cx+','+cy+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+r+','+r+',0,'+large+',1,'+x2.toFixed(2)+','+y2.toFixed(2)+' Z',fill:i&lt;k?'url(#'+hid+')':'url(#'+gid+')',stroke:'#0a0a2e','stroke-width':2,'stroke-linejoin':'round'}));}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;n;i++){var a=start+step*i;svg.appendChild(sa(ms('line'),{x1:cx,y1:cy,x2:(cx+r*Math.cos(a)).toFixed(2),y2:(cy+r*Math.sin(a)).toFixed(2),stroke:'#0a0a2e','stroke-width':1.8,'stroke-linecap':'round'}));}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(sa(ms('circle'),{cx:cx,cy:cy,r:r,fill:'none',stroke:ltn(pc,.55),'stroke-width':2}));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return svg;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// Interactive pie (tappable slices)</p>
-<p class="p1">function iPie(n,sliceStates,pc,onTap){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 100 100');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.style.width='100%';svg.style.maxWidth='125px';svg.style.webkitTapHighlightColor='transparent';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var cx=50,cy=50,r=42,uid=Math.random().toString(36).slice(2,8),gid='g'+uid,hid='h'+uid,defs=ms('defs');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>defs.innerHTML='&lt;radialGradient id="'+gid+'" cx="35%" cy="32%" r="65%"&gt;&lt;stop offset="0%" stop-color="'+ltn(pc,.5)+'"/&gt;&lt;stop offset="100%" stop-color="'+pc+'"/&gt;&lt;/radialGradient&gt;&lt;radialGradient id="'+hid+'" cx="35%" cy="32%" r="65%"&gt;&lt;stop offset="0%" stop-color="#ffe066"/&gt;&lt;stop offset="100%" stop-color="#f59e0b"/&gt;&lt;/radialGradient&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(defs);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var step=Math.PI*2/n,start=-Math.PI/2;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;n;i++){var a1=start+step*i,a2=a1+step,x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2),large=step&gt;Math.PI?1:0,col=sliceStates&amp;&amp;sliceStates[i];svg.appendChild(sa(ms('path'),{d:'M'+cx+','+cy+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+r+','+r+',0,'+large+',1,'+x2.toFixed(2)+','+y2.toFixed(2)+' Z',fill:col?'url(#'+hid+')':'url(#'+gid+')',stroke:'#0a0a2e','stroke-width':2,'stroke-linejoin':'round',opacity:col?1:.85}));}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;n;i++){var a=start+step*i;svg.appendChild(sa(ms('line'),{x1:cx,y1:cy,x2:(cx+r*Math.cos(a)).toFixed(2),y2:(cy+r*Math.sin(a)).toFixed(2),stroke:'#0a0a2e','stroke-width':1.8,'stroke-linecap':'round'}));}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(sa(ms('circle'),{cx:cx,cy:cy,r:r,fill:'none',stroke:ltn(pc,.55),'stroke-width':2}));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(onTap){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>function handleT(e){</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var touch=e.changedTouches?e.changedTouches[0]:(e.touches?e.touches[0]:e);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var rect=svg.getBoundingClientRect(),sx=(touch.clientX-rect.left)*(100/rect.width),sy=(touch.clientY-rect.top)*(100/rect.height),dx=sx-cx,dy=sy-cy;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if(dx*dx+dy*dy&gt;r*r)return;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var ang=Math.atan2(dy,dx)+Math.PI/2;if(ang&lt;0)ang+=Math.PI*2;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>onTap(Math.floor(ang/(Math.PI*2/n))%n);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>svg.addEventListener('click',handleT);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>svg.addEventListener('touchend',function(e){e.preventDefault();handleT(e);});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return svg;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// ══ WORLD 1 ══</p>
-<p class="p1">var W1=[{n:2,q:'Cut into 2 equal pieces!'},{n:3,q:'Cut into 3 equal pieces!'},{n:4,q:'Cut into 4 equal pieces!'},{n:5,q:'Cut into 5 equal pieces!'},{n:7,q:'Cut into 7 equal pieces!'}];</p>
-<p class="p1">var W1Q=[{n:2,t:1,lb:'1/2'},{n:3,t:1,lb:'1/3'},{n:4,t:1,lb:'1/4'},{n:5,t:2,lb:'2/5'},{n:7,t:3,lb:'3/7'}];</p>
-<p class="p1">var W1B=[{n:2,t:1,lb:'1/2'},{n:3,t:2,lb:'2/3'},{n:4,t:2,lb:'2/4'},{n:5,t:1,lb:'1/5'},{n:7,t:1,lb:'1/7'}];</p>
-<p class="p1">var PC=['#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8'];</p>
-<p class="p1">var SC=['#60a5fa','#60a5fa','#60a5fa','#60a5fa','#60a5fa'];</p>
-<p class="p1">var w1s={lvl:0,cuts:0,phase:'cutting',attempts:0,hilite:-1,ls:[]};</p>
-<p class="p2"><br></p>
-<p class="p1">function startSlice(idx){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>w1s.lvl=idx;w1s.cuts=0;w1s.phase='cutting';w1s.attempts=0;w1s.hilite=-1;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('ll1').textContent='World 1 · Level '+(idx+1);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('it1').textContent=W1[idx].q;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('fd1').textContent='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setFB('fb1','','');document.getElementById('bn1').classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>mkDots('ld1',idx,5);show('sg');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(function(){renderSlice();speak(W1[idx].q);},50);</p>
-<p class="p1">}</p>
-<p class="p1">function renderSlice(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var svg=document.getElementById('planet-svg');svg.innerHTML='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var lvl=w1s.lvl,cuts=w1s.cuts,phase=w1s.phase,n=W1[lvl].n,pc=PC[lvl],sc=SC[lvl];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>apDefs(svg,pc);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(phase==='cutting'){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(cuts+1===1){svg.appendChild(sa(ms('circle'),{cx:CX,cy:CY,r:R,fill:'url(#pg)',stroke:ltn(pc,.55),'stroke-width':3}));}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>else drawPie(svg,cuts+1,sc,pc,-1,false);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>addCraters(svg,pc);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var rem=n-1-cuts,h=sa(ms('text'),{x:CX,y:CY+R+22,'text-anchor':'middle','font-size':14,fill:'#a5b4fc','font-family':'Arial,sans-serif','font-weight':'bold'});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h.textContent=cuts===0?'Tap to slice!':rem+' more cut'+(rem!==1?'s':'')+' to go!';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>svg.appendChild(h);svg.style.cursor='pointer';svg.onclick=onSliceTap;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>} else if(phase==='equal'){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>drawPie(svg,n,sc,pc,w1s.hilite,false);addCraters(svg,pc);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var m=sa(ms('text'),{x:CX,y:CY+R+22,'text-anchor':'middle','font-size':13,fill:'#34d399','font-family':'Arial,sans-serif','font-weight':'bold'});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>m.textContent='All '+n+' pieces are equal!';svg.appendChild(m);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>svg.style.cursor='default';svg.onclick=null;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>drawPie(svg,n,sc,pc,0,true);addCraters(svg,pc);svg.style.cursor='default';svg.onclick=null;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p1">function onSliceTap(e){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>e.preventDefault();if(w1s.phase!=='cutting')return;sfxSlice();w1s.cuts++;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(w1s.cuts&gt;=W1[w1s.lvl].n-1){w1s.phase='equal';w1s.hilite=0;speak('Great! You made '+W1[w1s.lvl].n+' equal pieces!');renderSlice();runEqualAnim();}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>else renderSlice();</p>
-<p class="p1">}</p>
-<p class="p1">function runEqualAnim(){var n=W1[w1s.lvl].n,i=0;function next(){w1s.hilite=i;renderSlice();sfxPing();i++;if(i&lt;n)setTimeout(next,360);else setTimeout(revealSlice,500);}setTimeout(next,300);}</p>
-<p class="p1">function revealSlice(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>w1s.phase='reveal';renderSlice();sfxYes();w1s.attempts++;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var n=W1[w1s.lvl].n;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('fd1').textContent='1/'+n;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('it1').textContent='The yellow piece is 1/'+n+'!';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setFB('fb1','1 out of '+n+' equal pieces = 1/'+n,'correct');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('bn1').classList.remove('hidden');showBurst();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>speak('This yellow piece is 1 out of '+n+'. We write it as 1 slash '+n+'!');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>w1s.ls[w1s.lvl]=w1s.attempts===1?3:w1s.attempts===2?2:1;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('hs1').textContent=w1s.ls.reduce(function(a,b){return a+(b||0);},0);</p>
-<p class="p1">}</p>
-<p class="p1">document.getElementById('bn1').addEventListener('click',function(){sfxNext();startQuiz1(w1s.lvl,false);});</p>
-<p class="p2"><br></p>
-<p class="p1">var q1={lvl:0,n:0,t:0,colored:0,ss:[],bonus:false,done:false};</p>
-<p class="p1">function startQuiz1(li,bonus){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var d=bonus?W1B[li]:W1Q[li];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>q1={lvl:li,n:d.n,t:d.t,colored:0,ss:[],bonus:bonus,done:false};</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;d.n;i++)q1.ss.push(false);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('llq').textContent='World 1 · Quiz '+(li+1)+(bonus?' *':'');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('hsq').textContent=w1s.ls.reduce(function(a,b){return a+(b||0);},0);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('qf').textContent=d.lb;document.getElementById('qt').textContent='Tap to color '+d.lb;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('qcn').textContent='0/'+d.n;setFB('qfb','','');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('bc').classList.remove('hidden');document.getElementById('bsk').style.display='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>show('sq');setTimeout(function(){renderQuiz1();speak('Now tap to color '+d.lb+' of the planet!');},50);</p>
-<p class="p1">}</p>
-<p class="p1">function renderQuiz1(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var svg=document.getElementById('quiz-svg');svg.innerHTML='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var n=q1.n,ss=q1.ss,done=q1.done,pc=PC[q1.lvl],sc=SC[q1.lvl];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>apDefs(svg,pc);drawPie(svg,n,sc,pc,-1,false);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;ss.length;i++){if(ss[i])colSlice(svg,n,i);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>addCraters(svg,pc);svg.appendChild(sa(ms('circle'),{cx:CX,cy:CY,r:R,fill:'none',stroke:ltn(pc,.55),'stroke-width':3}));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('qcn').textContent=q1.colored+'/'+n;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.style.cursor=done?'default':'pointer';svg.onclick=done?null:onQuizTap1;</p>
-<p class="p1">}</p>
-<p class="p1">function onQuizTap1(e){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>e.preventDefault();if(q1.done)return;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var svg=document.getElementById('quiz-svg'),rect=svg.getBoundingClientRect();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var ex=e.touches?e.touches[0].clientX:e.clientX,ey=e.touches?e.touches[0].clientY:e.clientY;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var sx=(ex-rect.left)*(300/rect.width),sy=(ey-rect.top)*(300/rect.height),dx=sx-CX,dy=sy-CY;if(dx*dx+dy*dy&gt;R*R)return;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var ang=Math.atan2(dy,dx)+Math.PI/2;if(ang&lt;0)ang+=Math.PI*2;var idx=Math.floor(ang/(Math.PI*2/q1.n))%q1.n;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(q1.ss[idx]){q1.ss[idx]=false;q1.colored--;}else{q1.ss[idx]=true;q1.colored++;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>sfxColor();renderQuiz1();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(q1.colored===q1.t)setFB('qfb','Looks good! Press Check!','hint');else setFB('qfb','','');</p>
-<p class="p1">}</p>
-<p class="p1">document.getElementById('bc').addEventListener('click',function(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(q1.done)return;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(q1.colored===q1.t){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>q1.done=true;sfxYes();showBurst();setFB('qfb',q1.t+'/'+q1.n+' - Perfect!','correct');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>speak('Perfect! You colored '+q1.t+' out of '+q1.n+'!');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('bc').classList.add('hidden');document.getElementById('bsk').style.display='none';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(afterQ1,1000);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>sfxWrong();var diff=q1.t-q1.colored;var msg=diff&gt;0?'Need '+diff+' more piece'+(diff&gt;1?'s':'')+'!':'Too many! Try '+q1.t;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>setFB('qfb',msg,'wrong');speak(msg);shakeEl('quiz-svg');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">});</p>
-<p class="p1">function afterQ1(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('bsk').style.display='';var li=q1.lvl;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!q1.bonus)startQuiz1(li,true);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>else{if(li===2)showAha1();else{var nx=li+1;if(nx&gt;=5)finW1();else startSlice(nx);}}</p>
-<p class="p1">}</p>
-<p class="p1">document.getElementById('bsk').addEventListener('click',function(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>sfxNext();document.getElementById('bsk').style.display='';var li=q1.lvl;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!q1.bonus)startQuiz1(li,true);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>else{if(li===2)showAha1();else{var nx=li+1;if(nx&gt;=5)finW1();else startSlice(nx);}}</p>
-<p class="p1">});</p>
-<p class="p1">function finW1(){var tot=w1s.ls.reduce(function(a,b){return a+(b||0);},0);prog.w1={done:5,stars:tot};saveP();document.getElementById('cs1').textContent=rep('&amp;#11088;',Math.min(tot,15));show('sc1');speak('Amazing! Planet Pizza complete!');}</p>
-<p class="p1">function showAha1(){show('s1aha');var svg=document.getElementById('aha1-svg');svg.innerHTML='';renderAhaSVG(svg,4,2,'2/4',2,1,'1/2');speak('Look! Two out of four is the same as one out of two. They are equal!');}</p>
-<p class="p1">document.getElementById('ba1').addEventListener('click',function(){sfxNext();startSlice(3);});</p>
-<p class="p2"><br></p>
-<p class="p1">// ══ WORLD 2 ══</p>
-<p class="p1">var W2=[{n:5,t:2,lb:'2/5',q:'Load 2 pieces into the rocket!'},{n:7,t:3,lb:'3/7',q:'Load 3 pieces!'},{n:3,t:2,lb:'2/3',q:'Load 2 pieces!'},{n:4,t:3,lb:'3/4',q:'Load 3 pieces!'},{n:5,t:4,lb:'4/5',q:'Load 4 pieces!'}];</p>
-<p class="p1">var AC=['#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8'],AL=['#60a5fa','#60a5fa','#60a5fa','#60a5fa','#60a5fa'];</p>
-<p class="p1">var w2s={lvl:0,sel:[],done:false,ls:[]};</p>
-<p class="p1">function sHas(i){for(var x=0;x&lt;w2s.sel.length;x++)if(w2s.sel[x]===i)return true;return false;}</p>
-<p class="p1">function sAdd(i){if(!sHas(i))w2s.sel.push(i);}</p>
-<p class="p1">function sDel(i){w2s.sel=w2s.sel.filter(function(x){return x!==i;});}</p>
-<p class="p2"><br></p>
-<p class="p1">function startW2(idx){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>w2s.lvl=idx;w2s.sel=[];w2s.done=false;var lv=W2[idx];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('ll2').textContent='World 2 · Level '+(idx+1);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('w2t').textContent=lv.q;document.getElementById('w2f').textContent=lv.lb;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('w2c').textContent='0/'+lv.n;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setFB('w2fb','','');document.getElementById('bl').classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>mkDots('ld2',idx,5);show('sw2');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(function(){renderW2();},50);</p>
-<p class="p1">}</p>
-<p class="p1">function renderW2(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var svg=document.getElementById('w2-svg');svg.innerHTML='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var lv=W2[w2s.lvl],n=lv.n,ac=AC[w2s.lvl],al=AL[w2s.lvl];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var defs=ms('defs');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>defs.innerHTML='&lt;radialGradient id="ag" cx="40%" cy="35%" r="60%"&gt;&lt;stop offset="0%" stop-color="'+ltn(ac,.5)+'"/&gt;&lt;stop offset="100%" stop-color="'+ac+'"/&gt;&lt;/radialGradient&gt;&lt;radialGradient id="asel" cx="40%" cy="35%" r="60%"&gt;&lt;stop offset="0%" stop-color="#ffe066"/&gt;&lt;stop offset="100%" stop-color="#f59e0b"/&gt;&lt;/radialGradient&gt;&lt;filter id="gw" x="-30%" y="-30%" width="160%" height="160%"&gt;&lt;feGaussianBlur stdDeviation="4" result="b"/&gt;&lt;feMerge&gt;&lt;feMergeNode in="b"/&gt;&lt;feMergeNode in="SourceGraphic"/&gt;&lt;/feMerge&gt;&lt;/filter&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(defs);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var RX=270,RY=140;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(sa(ms('rect'),{x:RX-22,y:RY-55,width:44,height:80,rx:6,fill:'#1e3a5f',stroke:'#38bdf8','stroke-width':2}));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(sa(ms('polygon'),{points:RX+','+(RY-80)+' '+(RX-22)+','+(RY-55)+' '+(RX+22)+','+(RY-55),fill:'#ef4444',stroke:'#fca5a5','stroke-width':1.5}));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(sa(ms('circle'),{cx:RX,cy:RY-30,r:10,fill:'#0ea5e9',stroke:'#7dd3fc','stroke-width':1.5}));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(sa(ms('polygon'),{points:(RX-22)+','+(RY+10)+' '+(RX-36)+','+(RY+25)+' '+(RX-22)+','+(RY+25),fill:'#1d4ed8',stroke:'#60a5fa','stroke-width':1}));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(sa(ms('polygon'),{points:(RX+22)+','+(RY+10)+' '+(RX+36)+','+(RY+25)+' '+(RX+22)+','+(RY+25),fill:'#1d4ed8',stroke:'#60a5fa','stroke-width':1}));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(w2s.done){svg.appendChild(sa(ms('ellipse'),{cx:RX,cy:RY+30,rx:14,ry:22,fill:'#f97316',opacity:.7}));svg.appendChild(sa(ms('ellipse'),{cx:RX,cy:RY+30,rx:8,ry:14,fill:'#fde047',opacity:.9}));}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var cl=sa(ms('text'),{x:RX,y:RY+52,'text-anchor':'middle','font-size':11,fill:'#38bdf8','font-family':'Arial,sans-serif','font-weight':'bold'});cl.textContent=w2s.sel.length+'/'+n+' loaded';svg.appendChild(cl);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var OX=100,OY=140,orR=88,pR=22;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;n;i++){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var ang=-Math.PI/2+(Math.PI*2/n)*i,px=OX+orR*Math.cos(ang),py=OY+orR*Math.sin(ang),sel=sHas(i);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(sel){var line=sa(ms('line'),{x1:px,y1:py,x2:RX-22,y2:RY,stroke:'rgba(251,191,36,.47)','stroke-width':1.5,'stroke-dasharray':'5 3'});svg.insertBefore(line,svg.firstChild.nextSibling);}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var g=ms('g');g.style.cursor='pointer';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var pa={points:astPts(px,py,pR,i),fill:sel?'url(#asel)':'url(#ag)',stroke:sel?'#fbbf24':al,'stroke-width':sel?2.5:1.5,opacity:sel?1:.85};</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(sel)pa.filter='url(#gw)';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>g.appendChild(sa(ms('polygon'),pa));</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(sel){var ck=sa(ms('text'),{x:px,y:py+5,'text-anchor':'middle','font-size':13,fill:'#0a0a2e','font-family':'Arial,sans-serif','font-weight':'bold'});ck.textContent='v';g.appendChild(ck);}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var lb=sa(ms('text'),{x:px,y:py+(sel?-12:-10),'text-anchor':'middle','font-size':9,fill:sel?'#fbbf24':'#e0e7ff','font-family':'Arial,sans-serif','font-weight':'bold'});lb.textContent='1/'+n;g.appendChild(lb);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(!w2s.done){(function(ii){g.addEventListener('click',function(){onW2Tap(ii);});g.addEventListener('touchend',function(e){e.preventDefault();onW2Tap(ii);});})(i);}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>svg.appendChild(g);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p1">function astPts(cx,cy,r,seed){var sides=6+((seed*3)%3|0),pts=[];for(var i=0;i&lt;sides;i++){var a=(Math.PI*2/sides)*i,j=.65+.35*((Math.sin(seed*7+i*13))*.5+.5);pts.push((cx+r*j*Math.cos(a)).toFixed(1)+','+(cy+r*j*Math.sin(a)).toFixed(1));}return pts.join(' ');}</p>
-<p class="p1">function onW2Tap(idx){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(w2s.done)return;if(sHas(idx)){sDel(idx);sfxDesel();}else{sAdd(idx);sfxSel();}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('w2c').textContent=w2s.sel.length+'/'+W2[w2s.lvl].n;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(w2s.sel.length===W2[w2s.lvl].t)setFB('w2fb','Looks right! Press Launch!','hint');else setFB('w2fb','','');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>renderW2();</p>
-<p class="p1">}</p>
-<p class="p1">document.getElementById('bl').addEventListener('click',function(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(w2s.done)return;var lv=W2[w2s.lvl];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(w2s.sel.length===lv.t){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>w2s.done=true;sfxLaunch();showBurst();w2s.ls[w2s.lvl]=1;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('hs2').textContent=w2s.ls.reduce(function(a,b){return a+(b||0);},0);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>setFB('w2fb',lv.t+'/'+lv.n+' - Launched!','correct');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('bl').classList.add('hidden');renderW2();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>launchRocket(function(){var nx=w2s.lvl+1;if(nx&gt;=5)finW2();else startW2(nx);});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>sfxWrong();var diff=lv.t-w2s.sel.length;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>setFB('w2fb',diff&gt;0?'Need '+diff+' more piece'+(diff&gt;1?'s':'')+'!':'Too many! Try '+lv.t,'wrong');shakeEl('w2-svg');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">});</p>
-<p class="p1">function finW2(){var tot=w2s.ls.reduce(function(a,b){return a+(b||0);},0);prog.w2={done:5,stars:tot};saveP();document.getElementById('cs2').textContent=rep('&amp;#11088;',Math.min(tot,10));show('sc2');}</p>
-<p class="p2"><br></p>
-<p class="p1">function launchRocket(onDone){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var svgEl=document.getElementById('w2-svg'),rect=svgEl.getBoundingClientRect();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var cv=document.createElement('canvas');cv.style.position='fixed';cv.style.left='0';cv.style.top='0';cv.style.width='100%';cv.style.height='100%';cv.style.pointerEvents='none';cv.style.zIndex='30';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>cv.width=innerWidth;cv.height=innerHeight;document.getElementById('app').appendChild(cv);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var c=cv.getContext('2d'),rx0=rect.left+(270*(rect.width/360)),ry0=rect.top+(140*(rect.height/280)),t=0,totalFrames=90;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var parts=[];for(var i=0;i&lt;28;i++)parts.push({angle:Math.PI/2+((Math.random()-.5)*.6),life:1,decay:.018+Math.random()*.015,r:3+Math.random()*4,hue:20+Math.random()*40});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function frame(){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>t++;c.clearRect(0,0,cv.width,cv.height);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var lift=t&lt;20?0:Math.pow((t-20)/70,2),rx=rx0,ry=ry0-lift*innerHeight*1.3,intensity=t&lt;20?(t/20):1;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>for(var i=0;i&lt;parts.length;i++){</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var p=parts[i];if(p.life&lt;=0)continue;p.life-=p.decay*(t&gt;20?1.5:0.5);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var dist=(1-p.life)*(t&lt;20?40:80+lift*60),px=rx+Math.cos(p.angle)*dist*(0.3+Math.random()*.15),py=ry+Math.sin(p.angle)*dist;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var alpha=Math.max(0,p.life*intensity),pr=p.r*(0.5+p.life*.5);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var grad=c.createRadialGradient(px,py,0,px,py,pr*2);grad.addColorStop(0,'hsla('+p.hue+',100%,80%,'+alpha+')');grad.addColorStop(1,'hsla('+(p.hue+20)+',100%,50%,0)');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>c.beginPath();c.arc(px,py,pr*2,0,Math.PI*2);c.fillStyle=grad;c.fill();</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if(p.life&lt;=0){p.life=0.6+Math.random()*.4;p.angle=Math.PI/2+((Math.random()-.5)*.5);}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>c.save();c.translate(rx,ry);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>c.fillStyle='#1e3a5f';c.strokeStyle='#38bdf8';c.lineWidth=2;c.beginPath();c.rect(-16,-40,32,58);c.fill();c.stroke();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>c.fillStyle='#ef4444';c.strokeStyle='#fca5a5';c.lineWidth=1.5;c.beginPath();c.moveTo(0,-62);c.lineTo(-16,-40);c.lineTo(16,-40);c.closePath();c.fill();c.stroke();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>c.fillStyle='#0ea5e9';c.strokeStyle='#7dd3fc';c.lineWidth=1.5;c.beginPath();c.arc(0,-20,8,0,Math.PI*2);c.fill();c.stroke();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>c.fillStyle='#1d4ed8';c.strokeStyle='#60a5fa';c.lineWidth=1;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>c.beginPath();c.moveTo(-16,8);c.lineTo(-28,20);c.lineTo(-16,20);c.closePath();c.fill();c.stroke();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>c.beginPath();c.moveTo(16,8);c.lineTo(28,20);c.lineTo(16,20);c.closePath();c.fill();c.stroke();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>c.restore();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(t&lt;totalFrames)requestAnimationFrame(frame);else{cv.remove();onDone();}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>requestAnimationFrame(frame);</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// ══ WORLD 3 — blank circles, color freely, then choose ══</p>
-<p class="p1">var W3=[</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{a:{n:2,k:1},b:{n:3,k:1},correct:'left'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{a:{n:7,k:2},b:{n:5,k:1},correct:'left'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{a:{n:4,k:2},b:{n:2,k:1},correct:'both',aha:true,ahaMsg:'2 out of 4 is the same as 1 out of 2! They are equal!'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{a:{n:4,k:3},b:{n:3,k:2},correct:'left'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{a:{n:4,k:1},b:{n:5,k:2},correct:'right'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{a:{n:6,k:3},b:{n:2,k:1},correct:'both'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{a:{n:3,k:1},b:{n:7,k:2},correct:'left'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{a:{n:5,k:4},b:{n:4,k:3},correct:'left'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{a:{n:6,k:1},b:{n:4,k:1},correct:'right'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{a:{n:6,k:2},b:{n:3,k:1},correct:'both',ahaMsg:'2 out of 6 equals 1 out of 3! They are equal!'}</p>
-<p class="p1">];</p>
-<p class="p1">var W3PC=['#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8'];</p>
-<p class="p1">var w3s={lvl:0,done:false,ls:[],lSS:[],rSS:[],phase:'coloring',resultSide:''};</p>
-<p class="p2"><br></p>
-<p class="p1">function startW3(idx){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var lv=W3[idx];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>w3s.lvl=idx;w3s.done=false;w3s.phase='coloring';w3s.resultSide='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>w3s.lSS=[];for(var i=0;i&lt;lv.a.n;i++)w3s.lSS.push(false);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>w3s.rSS=[];for(var i=0;i&lt;lv.b.n;i++)w3s.rSS.push(false);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('ll3').textContent='World 3 · Level '+(idx+1);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('hs3').textContent=w3s.ls.reduce(function(a,b){return a+(b||0);},0);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('w3t').textContent='Which is bigger?';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setFB('w3fb','','');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('w3ans').style.display='flex';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('bw3n').classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('w3pairs').innerHTML='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>mkDots('ld3',idx,10);show('sw3');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(function(){renderW3();},50);</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function renderW3(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var container=document.getElementById('w3pairs');container.innerHTML='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var lv=W3[w3s.lvl],pc=W3PC[w3s.lvl],isDone=w3s.phase==='result';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>// Left card</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var lc=document.createElement('div');lc.className='w3card';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var lsvg=iPie(lv.a.n,w3s.lSS,pc,isDone?null:function(idx){onW3Tap('left',idx);});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>lc.appendChild(lsvg);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var lf=document.createElement('div');lf.className='w3frac';lf.textContent=lv.a.k+'/'+lv.a.n;lc.appendChild(lf);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(isDone){if(w3s.resultSide==='left'||w3s.resultSide==='both')lc.classList.add('correct');else lc.classList.add('wrong');}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>container.appendChild(lc);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>// VS</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var vs=document.createElement('div');vs.className='w3vs';vs.textContent='VS';container.appendChild(vs);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>// Right card</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var rc=document.createElement('div');rc.className='w3card';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var rsvg=iPie(lv.b.n,w3s.rSS,pc,isDone?null:function(idx){onW3Tap('right',idx);});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>rc.appendChild(rsvg);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var rf=document.createElement('div');rf.className='w3frac';rf.textContent=lv.b.k+'/'+lv.b.n;rc.appendChild(rf);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(isDone){if(w3s.resultSide==='right'||w3s.resultSide==='both')rc.classList.add('correct');else rc.classList.add('wrong');}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>container.appendChild(rc);</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function onW3Tap(side,idx){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(w3s.done)return;sfxColor();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(side==='left'){w3s.lSS[idx]=!w3s.lSS[idx];}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>else{w3s.rSS[idx]=!w3s.rSS[idx];}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>renderW3();</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function onW3Answer(choice){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(w3s.done)return;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var lv=W3[w3s.lvl],correct=lv.correct;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var isRight=(choice===correct);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(isRight){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>w3s.done=true;w3s.phase='result';w3s.resultSide=correct;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>sfxYes();showBurst();w3s.ls[w3s.lvl]=1;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('hs3').textContent=w3s.ls.reduce(function(a,b){return a+(b||0);},0);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var msg=correct==='both'?'Yes! They are equal!':correct==='left'?lv.a.k+'/'+lv.a.n+' is bigger!':lv.b.k+'/'+lv.b.n+' is bigger!';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>setFB('w3fb',msg,'correct');speak(msg);renderW3();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('w3ans').style.display='none';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(lv.aha)setTimeout(function(){showAha3(lv);},1200);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>else document.getElementById('bw3n').classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>sfxWrong();setFB('w3fb','Not quite! Try again!','wrong');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>shakeEl('w3pairs');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(function(){setFB('w3fb','','');},1000);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">document.getElementById('bw3al').addEventListener('click',function(){onW3Answer('left');});</p>
-<p class="p1">document.getElementById('bw3ae').addEventListener('click',function(){onW3Answer('both');});</p>
-<p class="p1">document.getElementById('bw3ar').addEventListener('click',function(){onW3Answer('right');});</p>
-<p class="p1">document.getElementById('bw3n').addEventListener('click',function(){sfxNext();var nx=w3s.lvl+1;if(nx&gt;=10)finW3();else startW3(nx);});</p>
-<p class="p2"><br></p>
-<p class="p1">function showAha3(lv){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('aha3msg').textContent=lv.ahaMsg||(lv.a.k+'/'+lv.a.n+' = '+lv.b.k+'/'+lv.b.n+'!');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>show('sw3aha');var svg=document.getElementById('aha3-svg');svg.innerHTML='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>renderAhaSVG(svg,lv.a.n,lv.a.k,lv.a.k+'/'+lv.a.n,lv.b.n,lv.b.k,lv.b.k+'/'+lv.b.n);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>speak(document.getElementById('aha3msg').textContent);</p>
-<p class="p1">}</p>
-<p class="p1">document.getElementById('ba3').addEventListener('click',function(){sfxNext();var nx=w3s.lvl+1;if(nx&gt;=10)finW3();else startW3(nx);});</p>
-<p class="p1">function finW3(){var tot=w3s.ls.reduce(function(a,b){return a+(b||0);},0);prog.w3={done:10,stars:tot};saveP();document.getElementById('cs3').textContent=rep('&amp;#11088;',Math.min(tot,10));show('sc3');speak('Twin Stars complete!');}</p>
-<p class="p2"><br></p>
-<p class="p1">// ══ WORLD 4 ══</p>
-<p class="p1">var W4=[</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{q:'Which is the BIGGEST?',opts:[{n:2,k:1},{n:3,k:1},{n:4,k:1}],correct:0},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{q:'Which is the SMALLEST?',opts:[{n:3,k:1},{n:4,k:1},{n:5,k:1}],correct:2},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{q:'Which equals 1/2?',opts:[{n:4,k:2},{n:4,k:1},{n:3,k:1}],correct:0},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{q:'Which is the BIGGEST?',opts:[{n:5,k:2},{n:7,k:3},{n:3,k:1}],correct:2},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{q:'Which equals 1/3?',opts:[{n:6,k:3},{n:6,k:2},{n:4,k:1}],correct:1},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{q:'Which is the SMALLEST?',opts:[{n:4,k:3},{n:3,k:2},{n:5,k:4}],correct:1},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{q:'Which is the BIGGEST?',opts:[{n:4,k:3},{n:5,k:3},{n:3,k:2}],correct:0},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{q:'Which equals 2/4?',opts:[{n:2,k:1},{n:3,k:1},{n:6,k:4}],correct:0}</p>
-<p class="p1">];</p>
-<p class="p1">var W4PC=['#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8'];</p>
-<p class="p1">var w4s={q:0,done:false,ls:[]};</p>
-<p class="p1">function startW4(idx){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>w4s.q=idx;w4s.done=false;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var qd=W4[idx];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>w4s.sliceStates=[];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var si=0;si&lt;qd.opts.length;si++){var arr=[];for(var sj=0;sj&lt;qd.opts[si].n;sj++)arr.push(false);w4s.sliceStates.push(arr);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('ll4').textContent='World 4 · Q '+(idx+1);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('hs4').textContent=w4s.ls.reduce(function(a,b){return a+(b||0);},0);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('w4t').textContent=qd.q;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setFB('w4fb','','');mkDots('ld4',idx,8);show('sw4');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(function(){renderW4(null);speak(qd.q);},50);</p>
-<p class="p1">}</p>
-<p class="p1">function renderW4(picked){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var container=document.getElementById('w4opts');container.innerHTML='';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var qd=W4[w4s.q],pc=W4PC[w4s.q];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;qd.opts.length;i++){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var opt=qd.opts[i],card=document.createElement('div');card.className='w4card';card.style.cursor='default';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var svg=iPie(opt.n,w4s.sliceStates[i],pc,w4s.done?null:(function(ii){return function(sIdx){sfxColor();w4s.sliceStates[ii][sIdx]=!w4s.sliceStates[ii][sIdx];renderW4(null);};})(i));</p>
-<p class="p1"><span class="Apple-converted-space">    </span>svg.style.maxWidth='100px';card.appendChild(svg);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var fl=document.createElement('div');fl.className='w4frac';fl.textContent=opt.k+'/'+opt.n;card.appendChild(fl);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var btn=document.createElement('button');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.textContent='Pick!';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.style.cssText='margin-top:6px;padding:7px 0;width:90%;font-size:clamp(12px,3vw,15px);font-weight:800;border:none;border-radius:30px;cursor:pointer;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;transition:transform .15s;-webkit-tap-highlight-color:transparent';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(picked!==null){</p>
-<p class="p1"><span class="Apple-converted-space">      </span>btn.disabled=true;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if(i===qd.correct){card.classList.add(picked===i?'correct':'reveal');btn.style.background='linear-gradient(135deg,#34d399,#059669)';}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>else if(picked===i){card.classList.add('wrong');btn.style.background='linear-gradient(135deg,#f87171,#dc2626)';}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(!w4s.done){(function(ii){btn.addEventListener('click',function(){onW4Pick(ii);});})(i);}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>card.appendChild(btn);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>container.appendChild(card);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p1">function onW4Pick(i){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(w4s.done)return;w4s.done=true;var qd=W4[w4s.q];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(i===qd.correct){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>sfxYes();showBurst();w4s.ls[w4s.q]=1;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('hs4').textContent=w4s.ls.reduce(function(a,b){return a+(b||0);},0);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>setFB('w4fb','Correct!','correct');speak('Correct! Great job!');renderW4(i);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(function(){var nx=w4s.q+1;if(nx&gt;=8)finW4();else startW4(nx);},1200);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>sfxWrong();setFB('w4fb','Not quite! Try again','wrong');speak('Not quite! Try again!');renderW4(i);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(function(){w4s.done=false;setFB('w4fb','','');renderW4(null);},1200);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">}</p>
-<p class="p1">function finW4(){var tot=w4s.ls.reduce(function(a,b){return a+(b||0);},0);prog.w4={done:8,stars:tot};saveP();document.getElementById('cs4').textContent=rep('&amp;#11088;',Math.min(tot,8));show('sc4');speak('Amazing! You are a Fraction Master!');}</p>
-<p class="p2"><br></p>
-<p class="p1">// AHA SVG</p>
-<p class="p1">function renderAhaSVG(svg,ln,lk,ll,rn,rk,rl){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var defs=ms('defs'),uid=Math.random().toString(36).slice(2,8);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>defs.innerHTML='&lt;radialGradient id="ah1'+uid+'" cx="35%" cy="32%" r="65%"&gt;&lt;stop offset="0%" stop-color="#f9a8d4"/&gt;&lt;stop offset="100%" stop-color="#e11d48"/&gt;&lt;/radialGradient&gt;&lt;radialGradient id="ah2'+uid+'" cx="35%" cy="32%" r="65%"&gt;&lt;stop offset="0%" stop-color="#ffe066"/&gt;&lt;stop offset="100%" stop-color="#f59e0b"/&gt;&lt;/radialGradient&gt;&lt;radialGradient id="ah3'+uid+'" cx="35%" cy="32%" r="65%"&gt;&lt;stop offset="0%" stop-color="#86efac"/&gt;&lt;stop offset="100%" stop-color="#16a34a"/&gt;&lt;/radialGradient&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(defs);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var L=80,CY2=80,R2=60,RC=240;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function sp(cx,cy,r,n,i){var step=Math.PI*2/n,a1=-Math.PI/2+step*i,a2=a1+step,x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);return'M'+cx+','+cy+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+r+','+r+',0,'+(step&gt;Math.PI?1:0)+',1,'+x2.toFixed(2)+','+y2.toFixed(2)+' Z';}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;ln;i++)svg.appendChild(sa(ms('path'),{d:sp(L,CY2,R2,ln,i),fill:i&lt;lk?'url(#ah2'+uid+')':'url(#ah1'+uid+')',stroke:'#0a0a2e','stroke-width':2}));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(sa(ms('circle'),{cx:L,cy:CY2,r:R2,fill:'none',stroke:'#a78bfa','stroke-width':2.5}));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var lt=sa(ms('text'),{x:L,y:CY2+R2+16,'text-anchor':'middle','font-size':15,fill:'#fbbf24','font-family':'Arial,sans-serif','font-weight':'bold'});lt.textContent=ll;svg.appendChild(lt);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var eq=sa(ms('text'),{x:160,y:CY2+6,'text-anchor':'middle','font-size':26,fill:'#e0e7ff','font-family':'Arial,sans-serif','font-weight':'900',opacity:0});eq.textContent='=';svg.appendChild(eq);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var rg=sa(ms('g'),{opacity:0});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;rn;i++)rg.appendChild(sa(ms('path'),{d:sp(RC,CY2,R2,rn,i),fill:i&lt;rk?'url(#ah2'+uid+')':'url(#ah3'+uid+')',stroke:'#0a0a2e','stroke-width':2}));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>rg.appendChild(sa(ms('circle'),{cx:RC,cy:CY2,r:R2,fill:'none',stroke:'#a78bfa','stroke-width':2.5}));svg.appendChild(rg);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var rt=sa(ms('text'),{x:RC,y:CY2+R2+16,'text-anchor':'middle','font-size':15,fill:'#fbbf24','font-family':'Arial,sans-serif','font-weight':'bold',opacity:0});rt.textContent=rl;svg.appendChild(rt);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var arc=sa(ms('path'),{d:'M '+(L+14)+' '+(CY2+R2+14)+' Q 160 '+(CY2+R2+38)+' '+(RC-14)+' '+(CY2+R2+14),fill:'none',stroke:'#fbbf24','stroke-width':1.5,'stroke-dasharray':'4 3',opacity:0});svg.appendChild(arc);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var st=sa(ms('text'),{x:160,y:CY2+R2+40,'text-anchor':'middle','font-size':11,fill:'#fbbf24','font-family':'Arial,sans-serif','font-weight':'bold',opacity:0});st.textContent='same amount!';svg.appendChild(st);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(function(){animFade(eq,0,1,400);},500);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(function(){animFade(rg,0,1,500);animFade(rt,0,1,500);},1100);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(function(){animFade(arc,0,1,400);animFade(st,0,1,400);},1900);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(function(){eq.style.fill='#fbbf24';},2500);</p>
-<p class="p1">}</p>
-<p class="p1">function animFade(el,from,to,dur){var s=performance.now();function step(n){var p=Math.min((n-s)/dur,1);el.setAttribute('opacity',from+(to-from)*p);if(p&lt;1)requestAnimationFrame(step);}requestAnimationFrame(step);}</p>
-<p class="p2"><br></p>
-<p class="p1">// SHARED PLANET HELPERS</p>
-<p class="p1">function apDefs(svg,pc){var d=ms('defs');d.innerHTML='&lt;radialGradient id="pg" cx="35%" cy="32%" r="65%"&gt;&lt;stop offset="0%" stop-color="'+ltn(pc,.45)+'"/&gt;&lt;stop offset="100%" stop-color="'+pc+'"/&gt;&lt;/radialGradient&gt;&lt;radialGradient id="hg" cx="35%" cy="32%" r="65%"&gt;&lt;stop offset="0%" stop-color="#ffe066"/&gt;&lt;stop offset="100%" stop-color="#f59e0b"/&gt;&lt;/radialGradient&gt;&lt;filter id="glow" x="-20%" y="-20%" width="140%" height="140%"&gt;&lt;feGaussianBlur stdDeviation="5" result="b"/&gt;&lt;feMerge&gt;&lt;feMergeNode in="b"/&gt;&lt;feMergeNode in="SourceGraphic"/&gt;&lt;/feMerge&gt;&lt;/filter&gt;';svg.appendChild(d);}</p>
-<p class="p1">function drawPie(svg,total,sc,pc,hilite,pulse){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var step=(Math.PI*2)/total,start=-Math.PI/2;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;total;i++){var a1=start+step*i,a2=a1+step,x1=CX+R*Math.cos(a1),y1=CY+R*Math.sin(a1),x2=CX+R*Math.cos(a2),y2=CY+R*Math.sin(a2),large=step&gt;Math.PI?1:0,d='M'+CX+','+CY+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+R+','+R+',0,'+large+',1,'+x2.toFixed(2)+','+y2.toFixed(2)+' Z',isH=i===hilite;var p=sa(ms('path'),{d:d,fill:isH?'url(#hg)':sc,stroke:'#0a0a2e','stroke-width':2.5,'stroke-linejoin':'round',opacity:isH?1:.84});if(isH&amp;&amp;pulse){p.setAttribute('filter','url(#glow)');p.style.animation='pulseSlice .9s ease-in-out infinite alternate';}svg.appendChild(p);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;total;i++){var a=start+(Math.PI*2/total)*i;svg.appendChild(sa(ms('line'),{x1:CX,y1:CY,x2:(CX+R*Math.cos(a)).toFixed(2),y2:(CY+R*Math.sin(a)).toFixed(2),stroke:'#0a0a2e','stroke-width':2.5,'stroke-linecap':'round'}));}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>svg.appendChild(sa(ms('circle'),{cx:CX,cy:CY,r:R,fill:'none',stroke:ltn(pc,.55),'stroke-width':3}));</p>
-<p class="p1">}</p>
-<p class="p1">function colSlice(svg,total,idx){var step=(Math.PI*2)/total,start=-Math.PI/2,a1=start+step*idx,a2=a1+step,x1=CX+R*Math.cos(a1),y1=CY+R*Math.sin(a1),x2=CX+R*Math.cos(a2),y2=CY+R*Math.sin(a2),d='M'+CX+','+CY+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+R+','+R+',0,'+(step&gt;Math.PI?1:0)+',1,'+x2.toFixed(2)+','+y2.toFixed(2)+' Z';svg.appendChild(sa(ms('path'),{d:d,fill:'url(#hg)',stroke:'#0a0a2e','stroke-width':2,'stroke-linejoin':'round',opacity:.95}));}</p>
-<p class="p1">function addCraters(svg,pc){var cr=[[185,112,8],[118,172,6],[162,178,7],[198,158,5],[132,118,5]];for(var i=0;i&lt;cr.length;i++){var c=cr[i];svg.appendChild(sa(ms('circle'),{cx:c[0],cy:c[1],r:c[2],fill:'none',stroke:ltn(pc,.28),'stroke-width':1.5,opacity:.45}));}}</p>
-<p class="p2"><br></p>
-<p class="p1">// UI</p>
-<p class="p1">function setFB(id,msg,type){var el=document.getElementById(id);el.textContent=msg;var base=(id==='w3fb')?'w3fb':(id==='w4fb')?'w4fb':'fbrow';el.className=base+(type?' fb-'+type:'');}</p>
-<p class="p1">function mkDots(id,cur,tot){var el=document.getElementById(id);el.innerHTML='';for(var i=0;i&lt;tot;i++){var d=document.createElement('div');d.className='dot'+(i&lt;cur?' done':i===cur?' current':'');el.appendChild(d);}}</p>
-<p class="p1">function showBurst(){var el=document.getElementById('star-burst');el.style.opacity=1;var bi=el.querySelector('.burst-inner');bi.style.animation='none';void bi.offsetWidth;bi.style.animation='burst .65s ease forwards';setTimeout(function(){el.style.opacity=0;},750);}</p>
-<p class="p1">function shakeEl(id){var el=document.getElementById(id);el.style.animation='wiggle .4s ease';setTimeout(function(){el.style.animation='';},450);}</p>
-<p class="p1">function rep(ch,n){var s='';for(var i=0;i&lt;n;i++)s+=ch;return s;}</p>
-<p class="p1">function updateMap(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var worlds=[{w:1,si:'sw1',pi:'pw1',max:5},{w:2,si:'map-sw2',pi:'pw2',max:5},{w:3,si:'map-sw3',pi:'pw3',max:10},{w:4,si:'map-sw4',pi:'pw4',max:8}];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for(var i=0;i&lt;worlds.length;i++){var wd=worlds[i],p=prog['w'+wd.w],filled=Math.min(p.stars,wd.max),empty=Math.max(0,wd.max-filled),s='';for(var j=0;j&lt;filled;j++)s+='&amp;#11088;';for(var j=0;j&lt;empty;j++)s+='&amp;#9734;';document.getElementById(wd.si).innerHTML=s;document.getElementById(wd.pi).style.width=(p.done/wd.max*100)+'%';}</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">// NAV</p>
-<p class="p1">document.getElementById('btn-start').addEventListener('click',function(){sfxTap();updateMap();show('screen-map');speak('Welcome to Fraction Quest!');});</p>
-<p class="p1">var cards=document.querySelectorAll('.world-card');</p>
-<p class="p1">for(var i=0;i&lt;cards.length;i++){(function(card){card.addEventListener('click',function(){if(card.classList.contains('locked')){sfxNo();return;}sfxTap();var w=card.getAttribute('data-world');if(w==='1'){w1s.ls=[];startSlice(0);}if(w==='2'){w2s.ls=[];startW2(0);}if(w==='3'){w3s.ls=[];startW3(0);}if(w==='4'){w4s.ls=[];startW4(0);}});</p>
-<p class="p1">})(cards[i]);}</p>
-<p class="p1">var bbs=['bb1','bbq','bb2','bb3','bb4'];</p>
-<p class="p1">for(var i=0;i&lt;bbs.length;i++){(function(id){document.getElementById(id).addEventListener('click',function(){sfxTap();updateMap();show('screen-map');});</p>
-<p class="p1">})(bbs[i]);}</p>
-<p class="p1">var dbs=['btc1','btc2','btc3','btc4'];</p>
-<p class="p1">for(var i=0;i&lt;dbs.length;i++){(function(id){document.getElementById(id).addEventListener('click',function(){sfxTap();updateMap();show('screen-map');});</p>
-<p class="p1">})(dbs[i]);}</p>
-<p class="p2"><br></p>
-<p class="p1">show('screen-title');</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<div id="app">
+<canvas id="starfield"></canvas>
+<div class="nebula nb1"></div><div class="nebula nb2"></div>
+<div id="star-burst"><div class="burst-inner">&#11088;</div></div>
+
+<!-- TITLE -->
+<div class="screen" id="screen-title">
+  <div class="cosmo">&#128104;&#8205;&#128640;</div>
+  <div style="text-align:center"><div class="game-title">FRACTION<br>QUEST</div><div class="game-subtitle">Space Math Adventure</div></div>
+  <button class="btn-primary" id="btn-start">&#128640; START</button>
+</div>
+
+<!-- MAP -->
+<div class="screen hidden" id="screen-map">
+  <div class="worlds-title">&#127756; Choose Your World</div>
+  <div class="worlds-grid">
+    <div class="world-card unlocked" data-world="1"><div class="world-icon">&#129680;</div><div class="world-info"><div class="world-name">Planet Pizza</div><div class="world-desc">Tap to slice · Unit fractions</div><div class="world-frac">1/2 · 1/3 · 1/4 · 1/5 · 1/7</div><div class="world-stars-row" id="sw1">&#9734;&#9734;&#9734;&#9734;&#9734;</div></div><div class="world-progress" id="pw1" style="width:0%"></div></div>
+    <div class="world-card unlocked" data-world="2"><div class="world-icon">&#127776;</div><div class="world-info"><div class="world-name">Asteroid Belt</div><div class="world-desc">Tap pieces · Build fractions</div><div class="world-frac">2/5 · 3/7 · 2/3 · 3/4 · 4/5</div><div class="world-stars-row" id="map-sw2">&#9734;&#9734;&#9734;&#9734;&#9734;</div></div><div class="world-progress" id="pw2" style="width:0%"></div></div>
+    <div class="world-card unlocked" data-world="3"><div class="world-icon">&#11088;</div><div class="world-info"><div class="world-name">Twin Stars</div><div class="world-desc">Color &amp; compare fractions!</div><div class="world-frac">Which is bigger? Discover equals!</div><div class="world-stars-row" id="map-sw3">&#9734;&#9734;&#9734;&#9734;&#9734;&#9734;&#9734;&#9734;&#9734;&#9734;</div></div><div class="world-progress" id="pw3" style="width:0%"></div></div>
+    <div class="world-card unlocked" data-world="4"><div class="world-icon">&#128760;</div><div class="world-info"><div class="world-name">Mission Control</div><div class="world-desc">Pick the right fraction!</div><div class="world-frac">Biggest · Smallest · Equals</div><div class="world-stars-row" id="map-sw4">&#9734;&#9734;&#9734;&#9734;&#9734;&#9734;&#9734;&#9734;</div></div><div class="world-progress" id="pw4" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- W1 SLICE -->
+<div class="screen hidden" id="sg">
+  <div class="game-header"><button class="btn-back" id="bb1">&#8592; Back</button><div class="lbl" id="ll1">World 1 · Level 1</div><div class="hud">&#11088;<span id="hs1">0</span></div></div>
+  <div class="gbody">
+    <div class="ldots" id="ld1"></div>
+    <div class="ibox b1"><div class="itxt" id="it1"></div><span class="fbig" id="fd1"></span></div>
+    <div class="pwrap"><svg id="planet-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="fbrow" id="fb1"></div>
+    <button class="btn-next hidden" id="bn1">Next &#8594;</button>
+  </div>
+</div>
+
+<!-- W1 QUIZ -->
+<div class="screen hidden" id="sq">
+  <div class="game-header"><button class="btn-back" id="bbq">&#8592; Back</button><div class="lbl" id="llq">Quiz</div><div class="hud">&#11088;<span id="hsq">0</span></div></div>
+  <div class="gbody">
+    <div class="ibox b1" style="border-color:#f59e0b">
+      <div class="itxt" style="font-size:clamp(9px,2.2vw,12px);color:#fbbf24;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px">&#127912; Color Challenge!</div>
+      <div class="itxt" id="qt"></div><span class="fbig" id="qf"></span>
+    </div>
+    <div class="qpwrap"><svg id="quiz-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="fctr"><div class="fctr-l">You colored</div><div class="fctr-n" id="qcn">0/4</div><div class="fctr-l">pieces</div></div>
+    <div class="fbrow" id="qfb"></div>
+    <div class="qbtns"><button class="btn-check" id="bc">&#10003; Check!</button><button class="btn-skip" id="bsk">Skip &#8594;</button></div>
+  </div>
+</div>
+
+<!-- W1 AHA -->
+<div class="screen hidden" id="s1aha">
+  <div style="text-align:center"><div style="font-size:clamp(10px,2.5vw,13px);color:#fbbf24;font-weight:700;letter-spacing:3px;text-transform:uppercase">&#10024; Discovery!</div><div style="font-size:clamp(15px,4vw,22px);font-weight:800;color:#e0e7ff;margin-top:4px">Look what happens...</div></div>
+  <svg id="aha1-svg" viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:370px;overflow:visible"></svg>
+  <div style="background:#1e1b4b99;border:2px solid #a78bfa;border-radius:13px;padding:10px 16px;text-align:center;max-width:310px"><div style="font-size:clamp(12px,3.5vw,16px);color:#e0e7ff;font-weight:700;line-height:1.5">2 pieces out of 4 = 1 piece out of 2!</div></div>
+  <button class="btn-primary" id="ba1">I see it! &#10024;</button>
+</div>
+
+<!-- W2 -->
+<div class="screen hidden" id="sw2">
+  <div class="game-header"><button class="btn-back" id="bb2">&#8592; Back</button><div class="lbl" id="ll2">World 2 · Level 1</div><div class="hud">&#11088;<span id="hs2">0</span></div></div>
+  <div class="gbody">
+    <div class="ldots" id="ld2"></div>
+    <div class="ibox b2">
+      <div class="itxt" style="font-size:clamp(9px,2vw,11px);color:#38bdf8;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">&#127776; Asteroid Belt</div>
+      <div class="itxt" id="w2t"></div><span class="fbig" id="w2f" style="color:#38bdf8"></span>
+    </div>
+    <div class="w2arena"><svg id="w2-svg" viewBox="0 0 360 280" xmlns="http://www.w3.org/2000/svg" style="touch-action:none;width:100%;height:100%;max-width:330px;max-height:280px;display:block;overflow:visible"></svg></div>
+    <div class="w2ctr"><div class="w2ctr-l">Loaded</div><div class="w2ctr-n" id="w2c">0/5</div><div class="w2ctr-l">pieces</div></div>
+    <div class="fbrow" id="w2fb"></div>
+    <button class="btn-launch hidden" id="bl">&#10003; Launch!</button>
+  </div>
+</div>
+
+<!-- W3 COLOR + CHOOSE -->
+<div class="screen hidden" id="sw3">
+  <div class="game-header"><button class="btn-back" id="bb3">&#8592; Back</button><div class="lbl" id="ll3">World 3 · Level 1</div><div class="hud">&#11088;<span id="hs3">0</span></div></div>
+  <div class="w3body">
+    <div class="ldots" id="ld3"></div>
+    <div class="ibox b3"><div class="itxt" id="w3t">Which is bigger?</div></div>
+    <div class="w3pairs" id="w3pairs"></div>
+    <div class="w3fb" id="w3fb"></div>
+    <div class="w3ans" id="w3ans">
+      <button class="btn-w3a btn-w3al" id="bw3al">&#11013; Left</button>
+      <button class="btn-w3a btn-w3ae" id="bw3ae">= Same</button>
+      <button class="btn-w3a btn-w3ar" id="bw3ar">Right &#10145;</button>
+    </div>
+    <button class="btn-w3next hidden" id="bw3n">Next &#8594;</button>
+  </div>
+</div>
+
+<!-- W3 AHA -->
+<div class="screen hidden" id="sw3aha">
+  <div style="text-align:center"><div style="font-size:clamp(10px,2.5vw,13px);color:#fbbf24;font-weight:700;letter-spacing:3px;text-transform:uppercase">&#10024; Discovery!</div><div style="font-size:clamp(15px,4vw,22px);font-weight:800;color:#e0e7ff;margin-top:4px">Wait — these are the same!</div></div>
+  <svg id="aha3-svg" viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:370px;overflow:visible"></svg>
+  <div style="background:#1e1b4b99;border:2px solid #a78bfa;border-radius:13px;padding:10px 16px;text-align:center;max-width:310px"><div style="font-size:clamp(12px,3.5vw,16px);color:#e0e7ff;font-weight:700;line-height:1.5" id="aha3msg"></div></div>
+  <button class="btn-primary" id="ba3">Cool! &#10024;</button>
+</div>
+
+<!-- W4 -->
+<div class="screen hidden" id="sw4">
+  <div class="game-header"><button class="btn-back" id="bb4">&#8592; Back</button><div class="lbl" id="ll4">World 4 · Q 1</div><div class="hud">&#11088;<span id="hs4">0</span></div></div>
+  <div class="w4body">
+    <div class="ldots" id="ld4"></div>
+    <div class="ibox b4"><div class="itxt" id="w4t"></div></div>
+    <div class="w4opts" id="w4opts"></div>
+    <div class="w4fb" id="w4fb"></div>
+  </div>
+</div>
+
+<!-- COMPLETE -->
+<div class="screen hidden" id="sc1"><div class="cicon">&#129680;</div><div class="ctitle">Planet Pizza Conquered!</div><div class="cstars" id="cs1"></div><div class="cmsg">You can slice any fraction!</div><button class="btn-primary" id="btc1">Back to Map</button></div>
+<div class="screen hidden" id="sc2"><div class="cicon">&#127776;</div><div class="ctitle">Asteroid Belt Cleared!</div><div class="cstars" id="cs2"></div><div class="cmsg">You can build any fraction!</div><button class="btn-primary" id="btc2">Back to Map</button></div>
+<div class="screen hidden" id="sc3"><div class="cicon">&#11088;</div><div class="ctitle">Twin Stars Complete!</div><div class="cstars" id="cs3"></div><div class="cmsg">You can compare fractions!</div><button class="btn-primary" id="btc3">Back to Map</button></div>
+<div class="screen hidden" id="sc4"><div class="cicon">&#128760;</div><div class="ctitle">Mission Control Complete!</div><div class="cstars" id="cs4"></div><div class="cmsg">You are a Fraction Master!</div><button class="btn-primary" id="btc4">Back to Map</button></div>
+</div>
+
+<script>
+// STARFIELD
+var cvs=document.getElementById('starfield'),ctx=cvs.getContext('2d'),stars=[];
+function resizeCvs(){cvs.width=innerWidth;cvs.height=innerHeight;stars=[];for(var i=0;i<140;i++)stars.push({x:Math.random()*cvs.width,y:Math.random()*cvs.height,r:Math.random()*1.4+.3,speed:Math.random()*.007+.002,phase:Math.random()*Math.PI*2});}
+function drawStars(t){ctx.clearRect(0,0,cvs.width,cvs.height);for(var i=0;i<stars.length;i++){var s=stars[i];var a=.2+.8*(Math.sin(t*.001*s.speed*800+s.phase)*.5+.5);ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+a+')';ctx.fill();}requestAnimationFrame(drawStars);}
+window.addEventListener('resize',resizeCvs);resizeCvs();requestAnimationFrame(drawStars);
+setInterval(function(){var e=document.createElement('div');e.className='shoot';e.style.left=(10+Math.random()*80)+'%';e.style.top=(Math.random()*40)+'%';document.getElementById('app').appendChild(e);setTimeout(function(){e.remove();},1300);},4200);
+
+// SPEECH
+function speak(text){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=0.82;u.pitch=1.1;u.volume=1;window.speechSynthesis.speak(u);}
+
+// AUDIO
+var aCtx=null;
+function au(){if(!aCtx)aCtx=new(window.AudioContext||window.webkitAudioContext)();return aCtx;}
+function tone(f,d,t,v){t=t||'sine';v=v||.12;try{var a=au(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.start();o.stop(a.currentTime+d);}catch(e){}}
+function sfxTap(){tone(440,.06);}
+function sfxSlice(){tone(520,.05);setTimeout(function(){tone(720,.07);},55);}
+function sfxColor(){tone(600,.07,'sine',.08);}
+function sfxSel(){tone(660,.07,'sine',.09);}
+function sfxDesel(){tone(400,.07,'sine',.09);}
+function sfxYes(){var ff=[523,659,784,1047];for(var i=0;i<ff.length;i++){(function(f,d){setTimeout(function(){tone(f,.17);},d);})(ff[i],i*75);}}
+function sfxNo(){tone(200,.28,'sawtooth',.07);}
+function sfxWrong(){tone(260,.2,'sawtooth',.07);}
+function sfxLaunch(){var ff=[400,500,650,800,1000];for(var i=0;i<ff.length;i++){(function(f,d){setTimeout(function(){tone(f,.11);},d);})(ff[i],i*55);}}
+function sfxNext(){tone(660,.11);}
+function sfxPing(){tone(800,.06,'sine',.08);}
+
+// STORAGE
+var SK='fq10';
+function loadP(){try{return JSON.parse(localStorage.getItem(SK))||defP();}catch(e){return defP();}}
+function saveP(){localStorage.setItem(SK,JSON.stringify(prog));}
+function defP(){return{w1:{done:0,stars:0},w2:{done:0,stars:0},w3:{done:0,stars:0},w4:{done:0,stars:0}};}
+var prog=loadP();
+
+function show(id){var ss=document.querySelectorAll('.screen');for(var i=0;i<ss.length;i++)ss[i].classList.add('hidden');document.getElementById(id).classList.remove('hidden');}
+
+// SVG UTILS
+var NS='http://www.w3.org/2000/svg';
+function ms(tag){return document.createElementNS(NS,tag);}
+function sa(el,o){var ks=Object.keys(o);for(var i=0;i<ks.length;i++)el.setAttribute(ks[i],o[ks[i]]);return el;}
+function ltn(hex,a){var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);r=Math.min(255,Math.round(r+(255-r)*a));g=Math.min(255,Math.round(g+(255-g)*a));b=Math.min(255,Math.round(b+(255-b)*a));return'#'+(r<16?'0':'')+r.toString(16)+(g<16?'0':'')+g.toString(16)+(b<16?'0':'')+b.toString(16);}
+var CX=150,CY=150,R=120;
+
+function miniPie(n,k,pc){
+  var svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 100 100');
+  var cx=50,cy=50,r=42,uid=Math.random().toString(36).slice(2,8),gid='g'+uid,hid='h'+uid,defs=ms('defs');
+  defs.innerHTML='<radialGradient id="'+gid+'" cx="35%" cy="32%" r="65%"><stop offset="0%" stop-color="'+ltn(pc,.5)+'"/><stop offset="100%" stop-color="'+pc+'"/></radialGradient><radialGradient id="'+hid+'" cx="35%" cy="32%" r="65%"><stop offset="0%" stop-color="#ffe066"/><stop offset="100%" stop-color="#f59e0b"/></radialGradient>';
+  svg.appendChild(defs);
+  var step=Math.PI*2/n,start=-Math.PI/2;
+  for(var i=0;i<n;i++){var a1=start+step*i,a2=a1+step,x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2),large=step>Math.PI?1:0;svg.appendChild(sa(ms('path'),{d:'M'+cx+','+cy+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+r+','+r+',0,'+large+',1,'+x2.toFixed(2)+','+y2.toFixed(2)+' Z',fill:i<k?'url(#'+hid+')':'url(#'+gid+')',stroke:'#0a0a2e','stroke-width':2,'stroke-linejoin':'round'}));}
+  for(var i=0;i<n;i++){var a=start+step*i;svg.appendChild(sa(ms('line'),{x1:cx,y1:cy,x2:(cx+r*Math.cos(a)).toFixed(2),y2:(cy+r*Math.sin(a)).toFixed(2),stroke:'#0a0a2e','stroke-width':1.8,'stroke-linecap':'round'}));}
+  svg.appendChild(sa(ms('circle'),{cx:cx,cy:cy,r:r,fill:'none',stroke:ltn(pc,.55),'stroke-width':2}));
+  return svg;
+}
+
+// Interactive pie (tappable slices)
+function iPie(n,sliceStates,pc,onTap){
+  var svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 100 100');
+  svg.style.width='100%';svg.style.maxWidth='125px';svg.style.webkitTapHighlightColor='transparent';
+  var cx=50,cy=50,r=42,uid=Math.random().toString(36).slice(2,8),gid='g'+uid,hid='h'+uid,defs=ms('defs');
+  defs.innerHTML='<radialGradient id="'+gid+'" cx="35%" cy="32%" r="65%"><stop offset="0%" stop-color="'+ltn(pc,.5)+'"/><stop offset="100%" stop-color="'+pc+'"/></radialGradient><radialGradient id="'+hid+'" cx="35%" cy="32%" r="65%"><stop offset="0%" stop-color="#ffe066"/><stop offset="100%" stop-color="#f59e0b"/></radialGradient>';
+  svg.appendChild(defs);
+  var step=Math.PI*2/n,start=-Math.PI/2;
+  for(var i=0;i<n;i++){var a1=start+step*i,a2=a1+step,x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2),large=step>Math.PI?1:0,col=sliceStates&&sliceStates[i];svg.appendChild(sa(ms('path'),{d:'M'+cx+','+cy+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+r+','+r+',0,'+large+',1,'+x2.toFixed(2)+','+y2.toFixed(2)+' Z',fill:col?'url(#'+hid+')':'url(#'+gid+')',stroke:'#0a0a2e','stroke-width':2,'stroke-linejoin':'round',opacity:col?1:.85}));}
+  for(var i=0;i<n;i++){var a=start+step*i;svg.appendChild(sa(ms('line'),{x1:cx,y1:cy,x2:(cx+r*Math.cos(a)).toFixed(2),y2:(cy+r*Math.sin(a)).toFixed(2),stroke:'#0a0a2e','stroke-width':1.8,'stroke-linecap':'round'}));}
+  svg.appendChild(sa(ms('circle'),{cx:cx,cy:cy,r:r,fill:'none',stroke:ltn(pc,.55),'stroke-width':2}));
+  if(onTap){
+    function handleT(e){
+      var touch=e.changedTouches?e.changedTouches[0]:(e.touches?e.touches[0]:e);
+      var rect=svg.getBoundingClientRect(),sx=(touch.clientX-rect.left)*(100/rect.width),sy=(touch.clientY-rect.top)*(100/rect.height),dx=sx-cx,dy=sy-cy;
+      if(dx*dx+dy*dy>r*r)return;
+      var ang=Math.atan2(dy,dx)+Math.PI/2;if(ang<0)ang+=Math.PI*2;
+      onTap(Math.floor(ang/(Math.PI*2/n))%n);
+    }
+    svg.addEventListener('click',handleT);
+    svg.addEventListener('touchend',function(e){e.preventDefault();handleT(e);});
+  }
+  return svg;
+}
+
+// ══ WORLD 1 ══
+var W1=[{n:2,q:'Cut into 2 equal pieces!'},{n:3,q:'Cut into 3 equal pieces!'},{n:4,q:'Cut into 4 equal pieces!'},{n:5,q:'Cut into 5 equal pieces!'},{n:7,q:'Cut into 7 equal pieces!'}];
+var W1Q=[{n:2,t:1,lb:'1/2'},{n:3,t:1,lb:'1/3'},{n:4,t:1,lb:'1/4'},{n:5,t:2,lb:'2/5'},{n:7,t:3,lb:'3/7'}];
+var W1B=[{n:2,t:1,lb:'1/2'},{n:3,t:2,lb:'2/3'},{n:4,t:2,lb:'2/4'},{n:5,t:1,lb:'1/5'},{n:7,t:1,lb:'1/7'}];
+var PC=['#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8'];
+var SC=['#60a5fa','#60a5fa','#60a5fa','#60a5fa','#60a5fa'];
+var w1s={lvl:0,cuts:0,phase:'cutting',attempts:0,hilite:-1,ls:[]};
+
+function startSlice(idx){
+  w1s.lvl=idx;w1s.cuts=0;w1s.phase='cutting';w1s.attempts=0;w1s.hilite=-1;
+  document.getElementById('ll1').textContent='World 1 · Level '+(idx+1);
+  document.getElementById('it1').textContent=W1[idx].q;
+  document.getElementById('fd1').textContent='';
+  setFB('fb1','','');document.getElementById('bn1').classList.add('hidden');
+  mkDots('ld1',idx,5);show('sg');
+  setTimeout(function(){renderSlice();speak(W1[idx].q);},50);
+}
+function renderSlice(){
+  var svg=document.getElementById('planet-svg');svg.innerHTML='';
+  var lvl=w1s.lvl,cuts=w1s.cuts,phase=w1s.phase,n=W1[lvl].n,pc=PC[lvl],sc=SC[lvl];
+  apDefs(svg,pc);
+  if(phase==='cutting'){
+    if(cuts+1===1){svg.appendChild(sa(ms('circle'),{cx:CX,cy:CY,r:R,fill:'url(#pg)',stroke:ltn(pc,.55),'stroke-width':3}));}
+    else drawPie(svg,cuts+1,sc,pc,-1,false);
+    addCraters(svg,pc);
+    var rem=n-1-cuts,h=sa(ms('text'),{x:CX,y:CY+R+22,'text-anchor':'middle','font-size':14,fill:'#a5b4fc','font-family':'Arial,sans-serif','font-weight':'bold'});
+    h.textContent=cuts===0?'Tap to slice!':rem+' more cut'+(rem!==1?'s':'')+' to go!';
+    svg.appendChild(h);svg.style.cursor='pointer';svg.onclick=onSliceTap;
+  } else if(phase==='equal'){
+    drawPie(svg,n,sc,pc,w1s.hilite,false);addCraters(svg,pc);
+    var m=sa(ms('text'),{x:CX,y:CY+R+22,'text-anchor':'middle','font-size':13,fill:'#34d399','font-family':'Arial,sans-serif','font-weight':'bold'});
+    m.textContent='All '+n+' pieces are equal!';svg.appendChild(m);
+    svg.style.cursor='default';svg.onclick=null;
+  } else {
+    drawPie(svg,n,sc,pc,0,true);addCraters(svg,pc);svg.style.cursor='default';svg.onclick=null;
+  }
+}
+function onSliceTap(e){
+  e.preventDefault();if(w1s.phase!=='cutting')return;sfxSlice();w1s.cuts++;
+  if(w1s.cuts>=W1[w1s.lvl].n-1){w1s.phase='equal';w1s.hilite=0;speak('Great! You made '+W1[w1s.lvl].n+' equal pieces!');renderSlice();runEqualAnim();}
+  else renderSlice();
+}
+function runEqualAnim(){var n=W1[w1s.lvl].n,i=0;function next(){w1s.hilite=i;renderSlice();sfxPing();i++;if(i<n)setTimeout(next,360);else setTimeout(revealSlice,500);}setTimeout(next,300);}
+function revealSlice(){
+  w1s.phase='reveal';renderSlice();sfxYes();w1s.attempts++;
+  var n=W1[w1s.lvl].n;
+  document.getElementById('fd1').textContent='1/'+n;
+  document.getElementById('it1').textContent='The yellow piece is 1/'+n+'!';
+  setFB('fb1','1 out of '+n+' equal pieces = 1/'+n,'correct');
+  document.getElementById('bn1').classList.remove('hidden');showBurst();
+  speak('This yellow piece is 1 out of '+n+'. We write it as 1 slash '+n+'!');
+  w1s.ls[w1s.lvl]=w1s.attempts===1?3:w1s.attempts===2?2:1;
+  document.getElementById('hs1').textContent=w1s.ls.reduce(function(a,b){return a+(b||0);},0);
+}
+document.getElementById('bn1').addEventListener('click',function(){sfxNext();startQuiz1(w1s.lvl,false);});
+
+var q1={lvl:0,n:0,t:0,colored:0,ss:[],bonus:false,done:false};
+function startQuiz1(li,bonus){
+  var d=bonus?W1B[li]:W1Q[li];
+  q1={lvl:li,n:d.n,t:d.t,colored:0,ss:[],bonus:bonus,done:false};
+  for(var i=0;i<d.n;i++)q1.ss.push(false);
+  document.getElementById('llq').textContent='World 1 · Quiz '+(li+1)+(bonus?' *':'');
+  document.getElementById('hsq').textContent=w1s.ls.reduce(function(a,b){return a+(b||0);},0);
+  document.getElementById('qf').textContent=d.lb;document.getElementById('qt').textContent='Tap to color '+d.lb;
+  document.getElementById('qcn').textContent='0/'+d.n;setFB('qfb','','');
+  document.getElementById('bc').classList.remove('hidden');document.getElementById('bsk').style.display='';
+  show('sq');setTimeout(function(){renderQuiz1();speak('Now tap to color '+d.lb+' of the planet!');},50);
+}
+function renderQuiz1(){
+  var svg=document.getElementById('quiz-svg');svg.innerHTML='';
+  var n=q1.n,ss=q1.ss,done=q1.done,pc=PC[q1.lvl],sc=SC[q1.lvl];
+  apDefs(svg,pc);drawPie(svg,n,sc,pc,-1,false);
+  for(var i=0;i<ss.length;i++){if(ss[i])colSlice(svg,n,i);}
+  addCraters(svg,pc);svg.appendChild(sa(ms('circle'),{cx:CX,cy:CY,r:R,fill:'none',stroke:ltn(pc,.55),'stroke-width':3}));
+  document.getElementById('qcn').textContent=q1.colored+'/'+n;
+  svg.style.cursor=done?'default':'pointer';svg.onclick=done?null:onQuizTap1;
+}
+function onQuizTap1(e){
+  e.preventDefault();if(q1.done)return;
+  var svg=document.getElementById('quiz-svg'),rect=svg.getBoundingClientRect();
+  var ex=e.touches?e.touches[0].clientX:e.clientX,ey=e.touches?e.touches[0].clientY:e.clientY;
+  var sx=(ex-rect.left)*(300/rect.width),sy=(ey-rect.top)*(300/rect.height),dx=sx-CX,dy=sy-CY;if(dx*dx+dy*dy>R*R)return;
+  var ang=Math.atan2(dy,dx)+Math.PI/2;if(ang<0)ang+=Math.PI*2;var idx=Math.floor(ang/(Math.PI*2/q1.n))%q1.n;
+  if(q1.ss[idx]){q1.ss[idx]=false;q1.colored--;}else{q1.ss[idx]=true;q1.colored++;}
+  sfxColor();renderQuiz1();
+  if(q1.colored===q1.t)setFB('qfb','Looks good! Press Check!','hint');else setFB('qfb','','');
+}
+document.getElementById('bc').addEventListener('click',function(){
+  if(q1.done)return;
+  if(q1.colored===q1.t){
+    q1.done=true;sfxYes();showBurst();setFB('qfb',q1.t+'/'+q1.n+' - Perfect!','correct');
+    speak('Perfect! You colored '+q1.t+' out of '+q1.n+'!');
+    document.getElementById('bc').classList.add('hidden');document.getElementById('bsk').style.display='none';
+    setTimeout(afterQ1,1000);
+  } else {
+    sfxWrong();var diff=q1.t-q1.colored;var msg=diff>0?'Need '+diff+' more piece'+(diff>1?'s':'')+'!':'Too many! Try '+q1.t;
+    setFB('qfb',msg,'wrong');speak(msg);shakeEl('quiz-svg');
+  }
+});
+function afterQ1(){
+  document.getElementById('bsk').style.display='';var li=q1.lvl;
+  if(!q1.bonus)startQuiz1(li,true);
+  else{if(li===2)showAha1();else{var nx=li+1;if(nx>=5)finW1();else startSlice(nx);}}
+}
+document.getElementById('bsk').addEventListener('click',function(){
+  sfxNext();document.getElementById('bsk').style.display='';var li=q1.lvl;
+  if(!q1.bonus)startQuiz1(li,true);
+  else{if(li===2)showAha1();else{var nx=li+1;if(nx>=5)finW1();else startSlice(nx);}}
+});
+function finW1(){var tot=w1s.ls.reduce(function(a,b){return a+(b||0);},0);prog.w1={done:5,stars:tot};saveP();document.getElementById('cs1').textContent=rep('&#11088;',Math.min(tot,15));show('sc1');speak('Amazing! Planet Pizza complete!');}
+function showAha1(){show('s1aha');var svg=document.getElementById('aha1-svg');svg.innerHTML='';renderAhaSVG(svg,4,2,'2/4',2,1,'1/2');speak('Look! Two out of four is the same as one out of two. They are equal!');}
+document.getElementById('ba1').addEventListener('click',function(){sfxNext();startSlice(3);});
+
+// ══ WORLD 2 ══
+var W2=[{n:5,t:2,lb:'2/5',q:'Load 2 pieces into the rocket!'},{n:7,t:3,lb:'3/7',q:'Load 3 pieces!'},{n:3,t:2,lb:'2/3',q:'Load 2 pieces!'},{n:4,t:3,lb:'3/4',q:'Load 3 pieces!'},{n:5,t:4,lb:'4/5',q:'Load 4 pieces!'}];
+var AC=['#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8'],AL=['#60a5fa','#60a5fa','#60a5fa','#60a5fa','#60a5fa'];
+var w2s={lvl:0,sel:[],done:false,ls:[]};
+function sHas(i){for(var x=0;x<w2s.sel.length;x++)if(w2s.sel[x]===i)return true;return false;}
+function sAdd(i){if(!sHas(i))w2s.sel.push(i);}
+function sDel(i){w2s.sel=w2s.sel.filter(function(x){return x!==i;});}
+
+function startW2(idx){
+  w2s.lvl=idx;w2s.sel=[];w2s.done=false;var lv=W2[idx];
+  document.getElementById('ll2').textContent='World 2 · Level '+(idx+1);
+  document.getElementById('w2t').textContent=lv.q;document.getElementById('w2f').textContent=lv.lb;
+  document.getElementById('w2c').textContent='0/'+lv.n;
+  setFB('w2fb','','');document.getElementById('bl').classList.remove('hidden');
+  mkDots('ld2',idx,5);show('sw2');
+  setTimeout(function(){renderW2();},50);
+}
+function renderW2(){
+  var svg=document.getElementById('w2-svg');svg.innerHTML='';
+  var lv=W2[w2s.lvl],n=lv.n,ac=AC[w2s.lvl],al=AL[w2s.lvl];
+  var defs=ms('defs');
+  defs.innerHTML='<radialGradient id="ag" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="'+ltn(ac,.5)+'"/><stop offset="100%" stop-color="'+ac+'"/></radialGradient><radialGradient id="asel" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#ffe066"/><stop offset="100%" stop-color="#f59e0b"/></radialGradient><filter id="gw" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+  svg.appendChild(defs);
+  var RX=270,RY=140;
+  svg.appendChild(sa(ms('rect'),{x:RX-22,y:RY-55,width:44,height:80,rx:6,fill:'#1e3a5f',stroke:'#38bdf8','stroke-width':2}));
+  svg.appendChild(sa(ms('polygon'),{points:RX+','+(RY-80)+' '+(RX-22)+','+(RY-55)+' '+(RX+22)+','+(RY-55),fill:'#ef4444',stroke:'#fca5a5','stroke-width':1.5}));
+  svg.appendChild(sa(ms('circle'),{cx:RX,cy:RY-30,r:10,fill:'#0ea5e9',stroke:'#7dd3fc','stroke-width':1.5}));
+  svg.appendChild(sa(ms('polygon'),{points:(RX-22)+','+(RY+10)+' '+(RX-36)+','+(RY+25)+' '+(RX-22)+','+(RY+25),fill:'#1d4ed8',stroke:'#60a5fa','stroke-width':1}));
+  svg.appendChild(sa(ms('polygon'),{points:(RX+22)+','+(RY+10)+' '+(RX+36)+','+(RY+25)+' '+(RX+22)+','+(RY+25),fill:'#1d4ed8',stroke:'#60a5fa','stroke-width':1}));
+  if(w2s.done){svg.appendChild(sa(ms('ellipse'),{cx:RX,cy:RY+30,rx:14,ry:22,fill:'#f97316',opacity:.7}));svg.appendChild(sa(ms('ellipse'),{cx:RX,cy:RY+30,rx:8,ry:14,fill:'#fde047',opacity:.9}));}
+  var cl=sa(ms('text'),{x:RX,y:RY+52,'text-anchor':'middle','font-size':11,fill:'#38bdf8','font-family':'Arial,sans-serif','font-weight':'bold'});cl.textContent=w2s.sel.length+'/'+n+' loaded';svg.appendChild(cl);
+  var OX=100,OY=140,orR=88,pR=22;
+  for(var i=0;i<n;i++){
+    var ang=-Math.PI/2+(Math.PI*2/n)*i,px=OX+orR*Math.cos(ang),py=OY+orR*Math.sin(ang),sel=sHas(i);
+    if(sel){var line=sa(ms('line'),{x1:px,y1:py,x2:RX-22,y2:RY,stroke:'rgba(251,191,36,.47)','stroke-width':1.5,'stroke-dasharray':'5 3'});svg.insertBefore(line,svg.firstChild.nextSibling);}
+    var g=ms('g');g.style.cursor='pointer';
+    var pa={points:astPts(px,py,pR,i),fill:sel?'url(#asel)':'url(#ag)',stroke:sel?'#fbbf24':al,'stroke-width':sel?2.5:1.5,opacity:sel?1:.85};
+    if(sel)pa.filter='url(#gw)';
+    g.appendChild(sa(ms('polygon'),pa));
+    if(sel){var ck=sa(ms('text'),{x:px,y:py+5,'text-anchor':'middle','font-size':13,fill:'#0a0a2e','font-family':'Arial,sans-serif','font-weight':'bold'});ck.textContent='v';g.appendChild(ck);}
+    var lb=sa(ms('text'),{x:px,y:py+(sel?-12:-10),'text-anchor':'middle','font-size':9,fill:sel?'#fbbf24':'#e0e7ff','font-family':'Arial,sans-serif','font-weight':'bold'});lb.textContent='1/'+n;g.appendChild(lb);
+    if(!w2s.done){(function(ii){g.addEventListener('click',function(){onW2Tap(ii);});g.addEventListener('touchend',function(e){e.preventDefault();onW2Tap(ii);});})(i);}
+    svg.appendChild(g);
+  }
+}
+function astPts(cx,cy,r,seed){var sides=6+((seed*3)%3|0),pts=[];for(var i=0;i<sides;i++){var a=(Math.PI*2/sides)*i,j=.65+.35*((Math.sin(seed*7+i*13))*.5+.5);pts.push((cx+r*j*Math.cos(a)).toFixed(1)+','+(cy+r*j*Math.sin(a)).toFixed(1));}return pts.join(' ');}
+function onW2Tap(idx){
+  if(w2s.done)return;if(sHas(idx)){sDel(idx);sfxDesel();}else{sAdd(idx);sfxSel();}
+  document.getElementById('w2c').textContent=w2s.sel.length+'/'+W2[w2s.lvl].n;
+  if(w2s.sel.length===W2[w2s.lvl].t)setFB('w2fb','Looks right! Press Launch!','hint');else setFB('w2fb','','');
+  renderW2();
+}
+document.getElementById('bl').addEventListener('click',function(){
+  if(w2s.done)return;var lv=W2[w2s.lvl];
+  if(w2s.sel.length===lv.t){
+    w2s.done=true;sfxLaunch();showBurst();w2s.ls[w2s.lvl]=1;
+    document.getElementById('hs2').textContent=w2s.ls.reduce(function(a,b){return a+(b||0);},0);
+    setFB('w2fb',lv.t+'/'+lv.n+' - Launched!','correct');
+    document.getElementById('bl').classList.add('hidden');renderW2();
+    launchRocket(function(){var nx=w2s.lvl+1;if(nx>=5)finW2();else startW2(nx);});
+  } else {
+    sfxWrong();var diff=lv.t-w2s.sel.length;
+    setFB('w2fb',diff>0?'Need '+diff+' more piece'+(diff>1?'s':'')+'!':'Too many! Try '+lv.t,'wrong');shakeEl('w2-svg');
+  }
+});
+function finW2(){var tot=w2s.ls.reduce(function(a,b){return a+(b||0);},0);prog.w2={done:5,stars:tot};saveP();document.getElementById('cs2').textContent=rep('&#11088;',Math.min(tot,10));show('sc2');}
+
+function launchRocket(onDone){
+  var svgEl=document.getElementById('w2-svg'),rect=svgEl.getBoundingClientRect();
+  var cv=document.createElement('canvas');cv.style.position='fixed';cv.style.left='0';cv.style.top='0';cv.style.width='100%';cv.style.height='100%';cv.style.pointerEvents='none';cv.style.zIndex='30';
+  cv.width=innerWidth;cv.height=innerHeight;document.getElementById('app').appendChild(cv);
+  var c=cv.getContext('2d'),rx0=rect.left+(270*(rect.width/360)),ry0=rect.top+(140*(rect.height/280)),t=0,totalFrames=90;
+  var parts=[];for(var i=0;i<28;i++)parts.push({angle:Math.PI/2+((Math.random()-.5)*.6),life:1,decay:.018+Math.random()*.015,r:3+Math.random()*4,hue:20+Math.random()*40});
+  function frame(){
+    t++;c.clearRect(0,0,cv.width,cv.height);
+    var lift=t<20?0:Math.pow((t-20)/70,2),rx=rx0,ry=ry0-lift*innerHeight*1.3,intensity=t<20?(t/20):1;
+    for(var i=0;i<parts.length;i++){
+      var p=parts[i];if(p.life<=0)continue;p.life-=p.decay*(t>20?1.5:0.5);
+      var dist=(1-p.life)*(t<20?40:80+lift*60),px=rx+Math.cos(p.angle)*dist*(0.3+Math.random()*.15),py=ry+Math.sin(p.angle)*dist;
+      var alpha=Math.max(0,p.life*intensity),pr=p.r*(0.5+p.life*.5);
+      var grad=c.createRadialGradient(px,py,0,px,py,pr*2);grad.addColorStop(0,'hsla('+p.hue+',100%,80%,'+alpha+')');grad.addColorStop(1,'hsla('+(p.hue+20)+',100%,50%,0)');
+      c.beginPath();c.arc(px,py,pr*2,0,Math.PI*2);c.fillStyle=grad;c.fill();
+      if(p.life<=0){p.life=0.6+Math.random()*.4;p.angle=Math.PI/2+((Math.random()-.5)*.5);}
+    }
+    c.save();c.translate(rx,ry);
+    c.fillStyle='#1e3a5f';c.strokeStyle='#38bdf8';c.lineWidth=2;c.beginPath();c.rect(-16,-40,32,58);c.fill();c.stroke();
+    c.fillStyle='#ef4444';c.strokeStyle='#fca5a5';c.lineWidth=1.5;c.beginPath();c.moveTo(0,-62);c.lineTo(-16,-40);c.lineTo(16,-40);c.closePath();c.fill();c.stroke();
+    c.fillStyle='#0ea5e9';c.strokeStyle='#7dd3fc';c.lineWidth=1.5;c.beginPath();c.arc(0,-20,8,0,Math.PI*2);c.fill();c.stroke();
+    c.fillStyle='#1d4ed8';c.strokeStyle='#60a5fa';c.lineWidth=1;
+    c.beginPath();c.moveTo(-16,8);c.lineTo(-28,20);c.lineTo(-16,20);c.closePath();c.fill();c.stroke();
+    c.beginPath();c.moveTo(16,8);c.lineTo(28,20);c.lineTo(16,20);c.closePath();c.fill();c.stroke();
+    c.restore();
+    if(t<totalFrames)requestAnimationFrame(frame);else{cv.remove();onDone();}
+  }
+  requestAnimationFrame(frame);
+}
+
+// ══ WORLD 3 — blank circles, color freely, then choose ══
+var W3=[
+  {a:{n:2,k:1},b:{n:3,k:1},correct:'left'},
+  {a:{n:7,k:2},b:{n:5,k:1},correct:'left'},
+  {a:{n:4,k:2},b:{n:2,k:1},correct:'both',aha:true,ahaMsg:'2 out of 4 is the same as 1 out of 2! They are equal!'},
+  {a:{n:4,k:3},b:{n:3,k:2},correct:'left'},
+  {a:{n:4,k:1},b:{n:5,k:2},correct:'right'},
+  {a:{n:6,k:3},b:{n:2,k:1},correct:'both'},
+  {a:{n:3,k:1},b:{n:7,k:2},correct:'left'},
+  {a:{n:5,k:4},b:{n:4,k:3},correct:'left'},
+  {a:{n:6,k:1},b:{n:4,k:1},correct:'right'},
+  {a:{n:6,k:2},b:{n:3,k:1},correct:'both',ahaMsg:'2 out of 6 equals 1 out of 3! They are equal!'}
+];
+var W3PC=['#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8'];
+var w3s={lvl:0,done:false,ls:[],lSS:[],rSS:[],phase:'coloring',resultSide:''};
+
+function startW3(idx){
+  var lv=W3[idx];
+  w3s.lvl=idx;w3s.done=false;w3s.phase='coloring';w3s.resultSide='';
+  w3s.lSS=[];for(var i=0;i<lv.a.n;i++)w3s.lSS.push(false);
+  w3s.rSS=[];for(var i=0;i<lv.b.n;i++)w3s.rSS.push(false);
+  document.getElementById('ll3').textContent='World 3 · Level '+(idx+1);
+  document.getElementById('hs3').textContent=w3s.ls.reduce(function(a,b){return a+(b||0);},0);
+  document.getElementById('w3t').textContent='Which is bigger?';
+  setFB('w3fb','','');
+  document.getElementById('w3ans').style.display='flex';
+  document.getElementById('bw3n').classList.add('hidden');
+  document.getElementById('w3pairs').innerHTML='';
+  mkDots('ld3',idx,10);show('sw3');
+  setTimeout(function(){renderW3();},50);
+}
+
+function renderW3(){
+  var container=document.getElementById('w3pairs');container.innerHTML='';
+  var lv=W3[w3s.lvl],pc=W3PC[w3s.lvl],isDone=w3s.phase==='result';
+  // Left card
+  var lc=document.createElement('div');lc.className='w3card';
+  var lsvg=iPie(lv.a.n,w3s.lSS,pc,isDone?null:function(idx){onW3Tap('left',idx);});
+  lc.appendChild(lsvg);
+  var lf=document.createElement('div');lf.className='w3frac';lf.textContent=lv.a.k+'/'+lv.a.n;lc.appendChild(lf);
+  if(isDone){if(w3s.resultSide==='left'||w3s.resultSide==='both')lc.classList.add('correct');else lc.classList.add('wrong');}
+  container.appendChild(lc);
+  // VS
+  var vs=document.createElement('div');vs.className='w3vs';vs.textContent='VS';container.appendChild(vs);
+  // Right card
+  var rc=document.createElement('div');rc.className='w3card';
+  var rsvg=iPie(lv.b.n,w3s.rSS,pc,isDone?null:function(idx){onW3Tap('right',idx);});
+  rc.appendChild(rsvg);
+  var rf=document.createElement('div');rf.className='w3frac';rf.textContent=lv.b.k+'/'+lv.b.n;rc.appendChild(rf);
+  if(isDone){if(w3s.resultSide==='right'||w3s.resultSide==='both')rc.classList.add('correct');else rc.classList.add('wrong');}
+  container.appendChild(rc);
+}
+
+function onW3Tap(side,idx){
+  if(w3s.done)return;sfxColor();
+  if(side==='left'){w3s.lSS[idx]=!w3s.lSS[idx];}
+  else{w3s.rSS[idx]=!w3s.rSS[idx];}
+  renderW3();
+}
+
+function onW3Answer(choice){
+  if(w3s.done)return;
+  var lv=W3[w3s.lvl],correct=lv.correct;
+  var isRight=(choice===correct);
+  if(isRight){
+    w3s.done=true;w3s.phase='result';w3s.resultSide=correct;
+    sfxYes();showBurst();w3s.ls[w3s.lvl]=1;
+    document.getElementById('hs3').textContent=w3s.ls.reduce(function(a,b){return a+(b||0);},0);
+    var msg=correct==='both'?'Yes! They are equal!':correct==='left'?lv.a.k+'/'+lv.a.n+' is bigger!':lv.b.k+'/'+lv.b.n+' is bigger!';
+    setFB('w3fb',msg,'correct');speak(msg);renderW3();
+    document.getElementById('w3ans').style.display='none';
+    if(lv.aha)setTimeout(function(){showAha3(lv);},1200);
+    else document.getElementById('bw3n').classList.remove('hidden');
+  } else {
+    sfxWrong();setFB('w3fb','Not quite! Try again!','wrong');
+    shakeEl('w3pairs');
+    setTimeout(function(){setFB('w3fb','','');},1000);
+  }
+}
+
+document.getElementById('bw3al').addEventListener('click',function(){onW3Answer('left');});
+document.getElementById('bw3ae').addEventListener('click',function(){onW3Answer('both');});
+document.getElementById('bw3ar').addEventListener('click',function(){onW3Answer('right');});
+document.getElementById('bw3n').addEventListener('click',function(){sfxNext();var nx=w3s.lvl+1;if(nx>=10)finW3();else startW3(nx);});
+
+function showAha3(lv){
+  document.getElementById('aha3msg').textContent=lv.ahaMsg||(lv.a.k+'/'+lv.a.n+' = '+lv.b.k+'/'+lv.b.n+'!');
+  show('sw3aha');var svg=document.getElementById('aha3-svg');svg.innerHTML='';
+  renderAhaSVG(svg,lv.a.n,lv.a.k,lv.a.k+'/'+lv.a.n,lv.b.n,lv.b.k,lv.b.k+'/'+lv.b.n);
+  speak(document.getElementById('aha3msg').textContent);
+}
+document.getElementById('ba3').addEventListener('click',function(){sfxNext();var nx=w3s.lvl+1;if(nx>=10)finW3();else startW3(nx);});
+function finW3(){var tot=w3s.ls.reduce(function(a,b){return a+(b||0);},0);prog.w3={done:10,stars:tot};saveP();document.getElementById('cs3').textContent=rep('&#11088;',Math.min(tot,10));show('sc3');speak('Twin Stars complete!');}
+
+// ══ WORLD 4 ══
+var W4=[
+  {q:'Which is the BIGGEST?',opts:[{n:2,k:1},{n:3,k:1},{n:4,k:1}],correct:0},
+  {q:'Which is the SMALLEST?',opts:[{n:3,k:1},{n:4,k:1},{n:5,k:1}],correct:2},
+  {q:'Which equals 1/2?',opts:[{n:4,k:2},{n:4,k:1},{n:3,k:1}],correct:0},
+  {q:'Which is the BIGGEST?',opts:[{n:5,k:2},{n:7,k:3},{n:3,k:1}],correct:2},
+  {q:'Which equals 1/3?',opts:[{n:6,k:3},{n:6,k:2},{n:4,k:1}],correct:1},
+  {q:'Which is the SMALLEST?',opts:[{n:4,k:3},{n:3,k:2},{n:5,k:4}],correct:1},
+  {q:'Which is the BIGGEST?',opts:[{n:4,k:3},{n:5,k:3},{n:3,k:2}],correct:0},
+  {q:'Which equals 2/4?',opts:[{n:2,k:1},{n:3,k:1},{n:6,k:4}],correct:0}
+];
+var W4PC=['#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8','#1d4ed8'];
+var w4s={q:0,done:false,ls:[]};
+function startW4(idx){
+  w4s.q=idx;w4s.done=false;
+  var qd=W4[idx];
+  w4s.sliceStates=[];
+  for(var si=0;si<qd.opts.length;si++){var arr=[];for(var sj=0;sj<qd.opts[si].n;sj++)arr.push(false);w4s.sliceStates.push(arr);}
+  document.getElementById('ll4').textContent='World 4 · Q '+(idx+1);
+  document.getElementById('hs4').textContent=w4s.ls.reduce(function(a,b){return a+(b||0);},0);
+  document.getElementById('w4t').textContent=qd.q;
+  setFB('w4fb','','');mkDots('ld4',idx,8);show('sw4');
+  setTimeout(function(){renderW4(null);speak(qd.q);},50);
+}
+function renderW4(picked){
+  var container=document.getElementById('w4opts');container.innerHTML='';
+  var qd=W4[w4s.q],pc=W4PC[w4s.q];
+  for(var i=0;i<qd.opts.length;i++){
+    var opt=qd.opts[i],card=document.createElement('div');card.className='w4card';card.style.cursor='default';
+    var svg=iPie(opt.n,w4s.sliceStates[i],pc,w4s.done?null:(function(ii){return function(sIdx){sfxColor();w4s.sliceStates[ii][sIdx]=!w4s.sliceStates[ii][sIdx];renderW4(null);};})(i));
+    svg.style.maxWidth='100px';card.appendChild(svg);
+    var fl=document.createElement('div');fl.className='w4frac';fl.textContent=opt.k+'/'+opt.n;card.appendChild(fl);
+    var btn=document.createElement('button');
+    btn.textContent='Pick!';
+    btn.style.cssText='margin-top:6px;padding:7px 0;width:90%;font-size:clamp(12px,3vw,15px);font-weight:800;border:none;border-radius:30px;cursor:pointer;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;transition:transform .15s;-webkit-tap-highlight-color:transparent';
+    if(picked!==null){
+      btn.disabled=true;
+      if(i===qd.correct){card.classList.add(picked===i?'correct':'reveal');btn.style.background='linear-gradient(135deg,#34d399,#059669)';}
+      else if(picked===i){card.classList.add('wrong');btn.style.background='linear-gradient(135deg,#f87171,#dc2626)';}
+    }
+    if(!w4s.done){(function(ii){btn.addEventListener('click',function(){onW4Pick(ii);});})(i);}
+    card.appendChild(btn);
+    container.appendChild(card);
+  }
+}
+function onW4Pick(i){
+  if(w4s.done)return;w4s.done=true;var qd=W4[w4s.q];
+  if(i===qd.correct){
+    sfxYes();showBurst();w4s.ls[w4s.q]=1;
+    document.getElementById('hs4').textContent=w4s.ls.reduce(function(a,b){return a+(b||0);},0);
+    setFB('w4fb','Correct!','correct');speak('Correct! Great job!');renderW4(i);
+    setTimeout(function(){var nx=w4s.q+1;if(nx>=8)finW4();else startW4(nx);},1200);
+  } else {
+    sfxWrong();setFB('w4fb','Not quite! Try again','wrong');speak('Not quite! Try again!');renderW4(i);
+    setTimeout(function(){w4s.done=false;setFB('w4fb','','');renderW4(null);},1200);
+  }
+}
+function finW4(){var tot=w4s.ls.reduce(function(a,b){return a+(b||0);},0);prog.w4={done:8,stars:tot};saveP();document.getElementById('cs4').textContent=rep('&#11088;',Math.min(tot,8));show('sc4');speak('Amazing! You are a Fraction Master!');}
+
+// AHA SVG
+function renderAhaSVG(svg,ln,lk,ll,rn,rk,rl){
+  var defs=ms('defs'),uid=Math.random().toString(36).slice(2,8);
+  defs.innerHTML='<radialGradient id="ah1'+uid+'" cx="35%" cy="32%" r="65%"><stop offset="0%" stop-color="#f9a8d4"/><stop offset="100%" stop-color="#e11d48"/></radialGradient><radialGradient id="ah2'+uid+'" cx="35%" cy="32%" r="65%"><stop offset="0%" stop-color="#ffe066"/><stop offset="100%" stop-color="#f59e0b"/></radialGradient><radialGradient id="ah3'+uid+'" cx="35%" cy="32%" r="65%"><stop offset="0%" stop-color="#86efac"/><stop offset="100%" stop-color="#16a34a"/></radialGradient>';
+  svg.appendChild(defs);
+  var L=80,CY2=80,R2=60,RC=240;
+  function sp(cx,cy,r,n,i){var step=Math.PI*2/n,a1=-Math.PI/2+step*i,a2=a1+step,x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);return'M'+cx+','+cy+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+r+','+r+',0,'+(step>Math.PI?1:0)+',1,'+x2.toFixed(2)+','+y2.toFixed(2)+' Z';}
+  for(var i=0;i<ln;i++)svg.appendChild(sa(ms('path'),{d:sp(L,CY2,R2,ln,i),fill:i<lk?'url(#ah2'+uid+')':'url(#ah1'+uid+')',stroke:'#0a0a2e','stroke-width':2}));
+  svg.appendChild(sa(ms('circle'),{cx:L,cy:CY2,r:R2,fill:'none',stroke:'#a78bfa','stroke-width':2.5}));
+  var lt=sa(ms('text'),{x:L,y:CY2+R2+16,'text-anchor':'middle','font-size':15,fill:'#fbbf24','font-family':'Arial,sans-serif','font-weight':'bold'});lt.textContent=ll;svg.appendChild(lt);
+  var eq=sa(ms('text'),{x:160,y:CY2+6,'text-anchor':'middle','font-size':26,fill:'#e0e7ff','font-family':'Arial,sans-serif','font-weight':'900',opacity:0});eq.textContent='=';svg.appendChild(eq);
+  var rg=sa(ms('g'),{opacity:0});
+  for(var i=0;i<rn;i++)rg.appendChild(sa(ms('path'),{d:sp(RC,CY2,R2,rn,i),fill:i<rk?'url(#ah2'+uid+')':'url(#ah3'+uid+')',stroke:'#0a0a2e','stroke-width':2}));
+  rg.appendChild(sa(ms('circle'),{cx:RC,cy:CY2,r:R2,fill:'none',stroke:'#a78bfa','stroke-width':2.5}));svg.appendChild(rg);
+  var rt=sa(ms('text'),{x:RC,y:CY2+R2+16,'text-anchor':'middle','font-size':15,fill:'#fbbf24','font-family':'Arial,sans-serif','font-weight':'bold',opacity:0});rt.textContent=rl;svg.appendChild(rt);
+  var arc=sa(ms('path'),{d:'M '+(L+14)+' '+(CY2+R2+14)+' Q 160 '+(CY2+R2+38)+' '+(RC-14)+' '+(CY2+R2+14),fill:'none',stroke:'#fbbf24','stroke-width':1.5,'stroke-dasharray':'4 3',opacity:0});svg.appendChild(arc);
+  var st=sa(ms('text'),{x:160,y:CY2+R2+40,'text-anchor':'middle','font-size':11,fill:'#fbbf24','font-family':'Arial,sans-serif','font-weight':'bold',opacity:0});st.textContent='same amount!';svg.appendChild(st);
+  setTimeout(function(){animFade(eq,0,1,400);},500);
+  setTimeout(function(){animFade(rg,0,1,500);animFade(rt,0,1,500);},1100);
+  setTimeout(function(){animFade(arc,0,1,400);animFade(st,0,1,400);},1900);
+  setTimeout(function(){eq.style.fill='#fbbf24';},2500);
+}
+function animFade(el,from,to,dur){var s=performance.now();function step(n){var p=Math.min((n-s)/dur,1);el.setAttribute('opacity',from+(to-from)*p);if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);}
+
+// SHARED PLANET HELPERS
+function apDefs(svg,pc){var d=ms('defs');d.innerHTML='<radialGradient id="pg" cx="35%" cy="32%" r="65%"><stop offset="0%" stop-color="'+ltn(pc,.45)+'"/><stop offset="100%" stop-color="'+pc+'"/></radialGradient><radialGradient id="hg" cx="35%" cy="32%" r="65%"><stop offset="0%" stop-color="#ffe066"/><stop offset="100%" stop-color="#f59e0b"/></radialGradient><filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';svg.appendChild(d);}
+function drawPie(svg,total,sc,pc,hilite,pulse){
+  var step=(Math.PI*2)/total,start=-Math.PI/2;
+  for(var i=0;i<total;i++){var a1=start+step*i,a2=a1+step,x1=CX+R*Math.cos(a1),y1=CY+R*Math.sin(a1),x2=CX+R*Math.cos(a2),y2=CY+R*Math.sin(a2),large=step>Math.PI?1:0,d='M'+CX+','+CY+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+R+','+R+',0,'+large+',1,'+x2.toFixed(2)+','+y2.toFixed(2)+' Z',isH=i===hilite;var p=sa(ms('path'),{d:d,fill:isH?'url(#hg)':sc,stroke:'#0a0a2e','stroke-width':2.5,'stroke-linejoin':'round',opacity:isH?1:.84});if(isH&&pulse){p.setAttribute('filter','url(#glow)');p.style.animation='pulseSlice .9s ease-in-out infinite alternate';}svg.appendChild(p);}
+  for(var i=0;i<total;i++){var a=start+(Math.PI*2/total)*i;svg.appendChild(sa(ms('line'),{x1:CX,y1:CY,x2:(CX+R*Math.cos(a)).toFixed(2),y2:(CY+R*Math.sin(a)).toFixed(2),stroke:'#0a0a2e','stroke-width':2.5,'stroke-linecap':'round'}));}
+  svg.appendChild(sa(ms('circle'),{cx:CX,cy:CY,r:R,fill:'none',stroke:ltn(pc,.55),'stroke-width':3}));
+}
+function colSlice(svg,total,idx){var step=(Math.PI*2)/total,start=-Math.PI/2,a1=start+step*idx,a2=a1+step,x1=CX+R*Math.cos(a1),y1=CY+R*Math.sin(a1),x2=CX+R*Math.cos(a2),y2=CY+R*Math.sin(a2),d='M'+CX+','+CY+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+R+','+R+',0,'+(step>Math.PI?1:0)+',1,'+x2.toFixed(2)+','+y2.toFixed(2)+' Z';svg.appendChild(sa(ms('path'),{d:d,fill:'url(#hg)',stroke:'#0a0a2e','stroke-width':2,'stroke-linejoin':'round',opacity:.95}));}
+function addCraters(svg,pc){var cr=[[185,112,8],[118,172,6],[162,178,7],[198,158,5],[132,118,5]];for(var i=0;i<cr.length;i++){var c=cr[i];svg.appendChild(sa(ms('circle'),{cx:c[0],cy:c[1],r:c[2],fill:'none',stroke:ltn(pc,.28),'stroke-width':1.5,opacity:.45}));}}
+
+// UI
+function setFB(id,msg,type){var el=document.getElementById(id);el.textContent=msg;var base=(id==='w3fb')?'w3fb':(id==='w4fb')?'w4fb':'fbrow';el.className=base+(type?' fb-'+type:'');}
+function mkDots(id,cur,tot){var el=document.getElementById(id);el.innerHTML='';for(var i=0;i<tot;i++){var d=document.createElement('div');d.className='dot'+(i<cur?' done':i===cur?' current':'');el.appendChild(d);}}
+function showBurst(){var el=document.getElementById('star-burst');el.style.opacity=1;var bi=el.querySelector('.burst-inner');bi.style.animation='none';void bi.offsetWidth;bi.style.animation='burst .65s ease forwards';setTimeout(function(){el.style.opacity=0;},750);}
+function shakeEl(id){var el=document.getElementById(id);el.style.animation='wiggle .4s ease';setTimeout(function(){el.style.animation='';},450);}
+function rep(ch,n){var s='';for(var i=0;i<n;i++)s+=ch;return s;}
+function updateMap(){
+  var worlds=[{w:1,si:'sw1',pi:'pw1',max:5},{w:2,si:'map-sw2',pi:'pw2',max:5},{w:3,si:'map-sw3',pi:'pw3',max:10},{w:4,si:'map-sw4',pi:'pw4',max:8}];
+  for(var i=0;i<worlds.length;i++){var wd=worlds[i],p=prog['w'+wd.w],filled=Math.min(p.stars,wd.max),empty=Math.max(0,wd.max-filled),s='';for(var j=0;j<filled;j++)s+='&#11088;';for(var j=0;j<empty;j++)s+='&#9734;';document.getElementById(wd.si).innerHTML=s;document.getElementById(wd.pi).style.width=(p.done/wd.max*100)+'%';}
+}
+
+// NAV
+document.getElementById('btn-start').addEventListener('click',function(){sfxTap();updateMap();show('screen-map');speak('Welcome to Fraction Quest!');});
+var cards=document.querySelectorAll('.world-card');
+for(var i=0;i<cards.length;i++){(function(card){card.addEventListener('click',function(){if(card.classList.contains('locked')){sfxNo();return;}sfxTap();var w=card.getAttribute('data-world');if(w==='1'){w1s.ls=[];startSlice(0);}if(w==='2'){w2s.ls=[];startW2(0);}if(w==='3'){w3s.ls=[];startW3(0);}if(w==='4'){w4s.ls=[];startW4(0);}});
+})(cards[i]);}
+var bbs=['bb1','bbq','bb2','bb3','bb4'];
+for(var i=0;i<bbs.length;i++){(function(id){document.getElementById(id).addEventListener('click',function(){sfxTap();updateMap();show('screen-map');});
+})(bbs[i]);}
+var dbs=['btc1','btc2','btc3','btc4'];
+for(var i=0;i<dbs.length;i++){(function(id){document.getElementById(id).addEventListener('click',function(){sfxTap();updateMap();show('screen-map');});
+})(dbs[i]);}
+
+show('screen-title');
+</script>
 </body>
 </html>
