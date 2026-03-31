@@ -143,17 +143,22 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI','Arial R
 .btn-w7.wrong{background:linear-gradient(135deg,#dc2626,#b91c1c);border-color:#f87171;color:#fff}
 .w7fb{min-height:24px;display:flex;align-items:center;justify-content:center;font-size:clamp(12px,3vw,16px);font-weight:800;text-align:center}
 #sw8{padding:0;justify-content:flex-start}
-.w8body{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:2px 8px 8px;max-width:490px;margin:0 auto;overflow:hidden}
-.w8tanks{display:flex;align-items:flex-end;justify-content:center;gap:36px;width:100%;flex:1;min-height:0;padding-bottom:4px;padding:0 20px 4px}
-.w8tank-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:transform .15s}
-.w8tank-wrap:active{transform:scale(.95)}
-.w8tank-outer{border:3px solid #6366f1;border-radius:10px;background:rgba(10,10,46,.6);position:relative;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.w8body{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:2px 8px 8px;max-width:600px;margin:0 auto;overflow:hidden}
+.w8tanks{display:flex;align-items:flex-end;justify-content:center;gap:clamp(20px,5vw,50px);width:100%;flex:1;min-height:0;padding:8px 16px 0}
+.w8tank-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:130px}
+.w8tank-outer{border:3px solid #6366f1;border-radius:12px;background:rgba(10,10,46,.6);position:relative;overflow:visible;width:100%}
 .w8tank-outer.correct{border-color:#34d399;box-shadow:0 0 18px rgba(52,211,153,.6)}
 .w8tank-outer.wrong{border-color:#f87171;box-shadow:0 0 14px rgba(248,113,113,.5)}
 .w8tank-outer.reveal{border-color:#34d399;box-shadow:0 0 14px rgba(52,211,153,.4)}
-.w8tank-fill{position:absolute;bottom:0;left:0;right:0;border-radius:0 0 7px 7px;transition:height .6s ease}
-.w8tank-label{font-size:clamp(16px,4.5vw,26px);font-weight:900;color:#e0e7ff}
+.w8tank-fill{position:absolute;bottom:0;left:0;right:0;border-radius:0 0 9px 9px;transition:height .6s ease}
+.w8tank-label{font-size:clamp(18px,4.5vw,28px);font-weight:900;color:#e0e7ff}
+.btn-w8pick{padding:10px 0;width:100%;font-size:clamp(13px,3.5vw,18px);font-weight:800;border:none;border-radius:32px;cursor:pointer;transition:transform .15s}
+.btn-w8pick:active{transform:scale(.93)}
 .w8fb{min-height:24px;display:flex;align-items:center;justify-content:center;font-size:clamp(12px,3vw,16px);font-weight:800;text-align:center}
+@media(orientation:landscape){
+  .w8tanks{gap:clamp(24px,4vw,60px);padding:4px 24px 0}
+  .w8tank-wrap{max-width:160px}
+}
 #star-burst{position:absolute;inset:0;pointer-events:none;z-index:20;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
 .burst-inner{font-size:84px}
 @keyframes burst{0%{transform:scale(.1);opacity:1}65%{transform:scale(1.4);opacity:1}100%{transform:scale(1.1);opacity:0}}
@@ -399,46 +404,47 @@ function startW8(idx){
 function renderW8(picked){
   var lv=W8[w8s.q];
   var container=document.getElementById('w8tanks');container.innerHTML='';
-  // figure out tank size based on available space
-  var tankW=70,tankH=180;
+  // tank height: fill available vertical space, capped for landscape
+  var screenH=window.innerHeight;
+  var isLandscape=window.innerWidth>window.innerHeight;
+  var tankH=Math.min(Math.floor(screenH*( isLandscape?0.52:0.42)),220);
+  var tankW=Math.min(Math.floor((window.innerWidth-120)/3),120);
   for(var i=0;i<3;i++){
     var val=lv.vals[i];
     var wrap=document.createElement('div');wrap.className='w8tank-wrap';
-    // outer tank
     var outer=document.createElement('div');outer.className='w8tank-outer';
     outer.style.width=tankW+'px';outer.style.height=tankH+'px';outer.style.position='relative';outer.style.overflow='visible';
     if(picked!==null){
       if(i===lv.correct)outer.classList.add(picked===i?'correct':'reveal');
       else if(picked===i)outer.classList.add('wrong');
     }
+    // clip inner overflow
+    var inner=document.createElement('div');
+    inner.style.cssText='position:absolute;inset:0;border-radius:9px;overflow:hidden';
     // fill
     var fill=document.createElement('div');fill.className='w8tank-fill';
     fill.style.height=(val*100)+'%';
     fill.style.background='linear-gradient(180deg,'+TANK_LIGHT[i]+','+TANK_COLS[i]+')';
-    fill.style.opacity='0.9';
-    outer.appendChild(fill);
-    // 10 tick divisions
+    fill.style.opacity='0.9';inner.appendChild(fill);
+    // 10 tick lines inside
     for(var t=1;t<=9;t++){
       var tick=document.createElement('div');
       var isMajor=(t===5);
-      tick.style.cssText='position:absolute;left:0;right:0;height:'+(isMajor?'2':'1')+'px;background:rgba(255,255,255,'+(isMajor?'0.5':'0.25')+');bottom:'+(t*10)+'%;z-index:1';
-      outer.appendChild(tick);
-      // label every other tick on the right side
-      if(t%2!==0){
-        var tlbl=document.createElement('div');
-        tlbl.style.cssText='position:absolute;right:-28px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.55);bottom:calc('+(t*10)+'% - 7px);white-space:nowrap';
-        tlbl.textContent='0.'+t;
-        outer.appendChild(tlbl);
-      }
+      tick.style.cssText='position:absolute;left:0;right:0;height:'+(isMajor?2:1)+'px;background:rgba(255,255,255,'+(isMajor?0.5:0.22)+');bottom:'+(t*10)+'%;z-index:2';
+      inner.appendChild(tick);
+    }
+    outer.appendChild(inner);
+    // labels on the RIGHT side outside the tank
+    for(var t=1;t<=9;t+=2){
+      var tlbl=document.createElement('div');
+      tlbl.style.cssText='position:absolute;left:calc(100% + 5px);font-size:clamp(9px,2vw,12px);font-weight:700;color:rgba(255,255,255,0.65);bottom:calc('+(t*10)+'% - 8px);white-space:nowrap;line-height:1';
+      tlbl.textContent='0.'+t;outer.appendChild(tlbl);
     }
     wrap.appendChild(outer);
-    // decimal label
-    var lbl=document.createElement('div');lbl.className='w8tank-label';lbl.textContent=val.toString();
-    wrap.appendChild(lbl);
+    // decimal value label
+    var lbl=document.createElement('div');lbl.className='w8tank-label';lbl.textContent=val.toString();wrap.appendChild(lbl);
     // pick button
-    var btn=document.createElement('button');
-    btn.style.cssText='margin-top:6px;padding:8px 0;width:'+tankW+'px;font-size:clamp(12px,3.5vw,16px);font-weight:800;border:none;border-radius:28px;cursor:pointer;transition:transform .15s;';
-    btn.textContent='Pick!';
+    var btn=document.createElement('button');btn.className='btn-w8pick';btn.textContent='Pick!';
     if(picked!==null){
       btn.disabled=true;
       if(i===lv.correct)btn.style.background='linear-gradient(135deg,#34d399,#059669)';
@@ -446,7 +452,7 @@ function renderW8(picked){
       else btn.style.background='rgba(99,102,241,0.3)';
       btn.style.color='#fff';
     } else {
-      btn.style.background='linear-gradient(135deg,'+TANK_COLS[i]+','+TANK_COLS[i]+'bb)';
+      btn.style.background='linear-gradient(135deg,'+TANK_COLS[i]+','+TANK_COLS[i]+'cc)';
       btn.style.color='#fff';
     }
     if(!w8s.done){(function(ii){btn.addEventListener('click',function(){onW8Pick(ii);});})(i);}
